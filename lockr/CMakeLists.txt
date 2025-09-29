@@ -1,32 +1,66 @@
 cmake_minimum_required(VERSION 3.29)
 
-# Build the lockr code as a static library
-add_library(lockr STATIC
-        src/window.cpp
-        src/appLoop.cpp
-        src/DirectX12/dxgiFactory.cpp
-        src/DirectX12/rtv.cpp
-        src/DirectX12/command.cpp
-        src/DirectX12/fence.cpp
-        src/Pipeline/renderer.cpp
-        src/DXWindow.cpp
+# ---------------------------
+# Openwall bcrypt (vendored)
+# ---------------------------
+add_library(bcrypt_ow STATIC
+        src/external/libbcrypt/libbcrypt.c
+        src/external/libbcrypt/crypt_blowfish.c
+        src/external/libbcrypt/crypt_gensalt.c
+        src/external/libbcrypt/ow-crypt.c
+)
+set_target_properties(bcrypt_ow PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-        include/window.h
-        include/appLoop.h
-        include/DXWindow.h
+target_include_directories(bcrypt_ow
+        BEFORE PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/external/libbcrypt
 )
 
-# Public headers are in lockr/include
-target_include_directories(lockr
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
-# Platform-specific defines and libraries
-if (WIN32)
-    target_compile_definitions(lockr PUBLIC PLATFORM_WINDOWS)
-elseif(APPLE)
-    target_compile_definitions(lockr PUBLIC PLATFORM_MACOS)
-elseif(UNIX AND NOT APPLE)
-    target_compile_definitions(lockr PUBLIC PLATFORM_LINUX)
+if(MSVC)
+    target_compile_definitions(bcrypt_ow PRIVATE _CRT_SECURE_NO_WARNINGS)
+else()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/external/libbcrypt/crypt_blowfish/x86.S")
+        target_sources(bcrypt_ow PRIVATE src/external/libbcrypt/crypt_blowfish/x86.S)
+    endif()
 endif()
+
+# ---------------------------
+# Your library
+# ---------------------------
+add_library(lockr STATIC
+        src/utils/string.cpp
+        src/utils/configHandler.cpp
+        src/db.cpp
+)
+set_target_properties(lockr PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+target_include_directories(lockr PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_compile_definitions(lockr PRIVATE CPPHTTPLIB_NO_MMAP)
+if(WIN32)
+    target_compile_definitions(lockr PRIVATE PLATFORM_WINDOWS UNICODE _UNICODE)
+    target_compile_definitions(lockr PUBLIC WIN32_LEAN_AND_MEAN NOMINMAX NOCRYPT)
+elseif(APPLE)
+    target_compile_definitions(lockr PRIVATE PLATFORM_MACOS)
+elseif(UNIX)
+    target_compile_definitions(lockr PRIVATE PLATFORM_LINUX)
+endif()
+
+# Third-party libs needed by 'lockr'
+# (yaml-cpp comes from the parent, bcrypt_ow is vendored here)
+target_link_libraries(lockr PUBLIC yaml-cpp bcrypt_ow)
+
+# ---------------------------
+# MongoDB (link AFTER 'lockr' exists)
+# ---------------------------
+find_package(mongocxx CONFIG REQUIRED)
+find_package(bsoncxx CONFIG REQUIRED)
+
+target_link_libraries(lockr PRIVATE
+        mongo::mongocxx_static
+        mongo::bsoncxx_static
+)
