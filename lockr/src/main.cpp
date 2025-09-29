@@ -11,6 +11,12 @@ using namespace httplib;
 int main() {
     Server svr;
 
+    //init db
+    const char* env = std::getenv("MONGODB_URI");
+    std::string uri = env ? env : "mongodb://127.0.0.1:37017";
+
+    lockr::DB db{ uri };
+
     svr.Get("/test", [](const Request& req, Response& res) {
         try {
             char salt[BCRYPT_HASHSIZE];  // encoded salt
@@ -42,18 +48,6 @@ int main() {
         }
     });
 
-    svr.Get("/test2", [](const Request& req, Response& res) {
-        const char* env = std::getenv("MONGODB_URI");
-        std::string uri = env ? env : "mongodb://127.0.0.1:37017";
-
-        lockr::Db db{ uri };
-
-        if (db.ping()) {
-            std::cout << "MongoDB is reachable\n";
-        } else {
-            std::cout << "MongoDB ping failed\n";
-        }
-    });
 
 
     svr.listen("0.0.0.0", 8080);
