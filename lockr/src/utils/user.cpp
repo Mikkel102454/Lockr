@@ -39,9 +39,9 @@ int User::save() {
     std::string dbError;
     int ec = DB::insert("users", std::move(doc), &dbError);
 
-    if(ec != 0){
-        return 3;
-    }
+    if(ec == 0) return 0;
+    if(ec == 1) return 1;
+    if(ec == 2) return 2;
 
     std::cout << dbError;
     return 3;

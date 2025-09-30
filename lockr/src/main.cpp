@@ -15,11 +15,11 @@ int main() {
     Config::initialize();
     DB::connect();
 
-    svr.Post("/api/user/create", [](const Request& req, Response& res) {
+    svr.Post("/api/users/create", [](const Request& req, Response& res) {
         json body = json::parse(req.body, /*callback*/nullptr, /*allow_exceptions*/false);
         if (body.is_discarded()) {
             res.status = BadRequest_400;
-            res.set_content(R"({"success":"false", "message":"invalid JSON"})", "application/json");
+            res.set_content(R"({"success":"false", "message":"Invalid JSON"})", "application/json");
             return;
         }
 
@@ -29,21 +29,21 @@ int main() {
 
         if (username.empty() || email.empty() || password.empty()) {
             res.status = BadRequest_400;
-            res.set_content(R"({"success":"false", "message":"username, email, password required"})",
+            res.set_content(R"({"success":"false", "message":"Username, email, password required"})",
                             "application/json");
             return;
         }
 
         if(User::usernameExist(username) != 0){
             res.status = Conflict_409;
-            res.set_content(R"({"success":"false", "message":"username already exists"})",
+            res.set_content(R"({"success":"false", "message":"Username already exists"})",
                             "application/json");
             return;
         }
 
         if(User::emailExist(email) != 0){
             res.status = Conflict_409;
-            res.set_content(R"({"success":"false", "message":"email already exists"})",
+            res.set_content(R"({"success":"false", "message":"Email already exists"})",
                             "application/json");
             return;
         }
@@ -56,6 +56,7 @@ int main() {
         const int rc = User::hashPassword(password, passwordHash);
         if (rc != 0) {
             res.status = InternalServerError_500;
+            res.set_content(R"({"success":"false", "message":"User could not be created"})", "application/json");
             return;
         }
 
@@ -72,6 +73,7 @@ int main() {
             return;
         } else if(ec == 3) {
             res.status = InternalServerError_500;
+            res.set_content(R"({"success":"false", "message":"User could not be created"})", "application/json");
             return;
         }
 
@@ -79,60 +81,58 @@ int main() {
         res.set_content(R"({"success":"true", "message":"User has been created"})", "application/json");
     });
 
-    svr.Get("/api/user/username", [](const Request& req, Response& res) {
-        json body = json::parse(req.body, /*callback*/nullptr, /*allow_exceptions*/false);
-        if (body.is_discarded()) {
-            res.status = BadRequest_400;
-            res.set_content(R"({"success":"false", "message":"invalid JSON"})", "application/json");
+    svr.Get("/api/users/username", [](const Request& req, Response& res) {
+        if (!req.has_param("username")) {
+            res.status = 400;
+            res.set_content(R"({"success":false,"message":"Username required"})", "application/json");
             return;
         }
 
-        std::string username = body.value("username", "");
+        std::string username = req.get_param_value("username");
 
         if (username.empty()) {
             res.status = BadRequest_400;
-            res.set_content(R"({"success":"false", "message":"username required"})",
+            res.set_content(R"({"success":"false", "message":"Username required"})",
                             "application/json");
             return;
         }
 
         if(User::usernameExist(username) != 0){
             res.status = Conflict_409;
-            res.set_content(R"({"success":"true", "exists":"true"})",
+            res.set_content(R"({"success":"true", "exists":"true", "message":"Username is already taken"})",
                             "application/json");
             return;
         }
 
         res.status = OK_200;
-        res.set_content(R"({"success":"true", "exists":"false"})",
+        res.set_content(R"({"success":"true", "exists":"false", "message":"Username is available"})",
                         "application/json");
     });
-    svr.Get("/api/user/email", [](const Request& req, Response& res) {
-        json body = json::parse(req.body, /*callback*/nullptr, /*allow_exceptions*/false);
-        if (body.is_discarded()) {
-            res.status = BadRequest_400;
-            res.set_content(R"({"success":"false", "message":"invalid JSON"})", "application/json");
+    svr.Get("/api/users/email", [](const Request& req, Response& res) {
+        if (!req.has_param("email")) {
+            res.status = 400;
+            res.set_content(R"({"success":false,"message":"Email required"})", "application/json");
             return;
         }
 
-        std::string email = body.value("email", "");
+        std::string email = req.get_param_value("email");
 
         if (email.empty()) {
             res.status = BadRequest_400;
-            res.set_content(R"({"success":"false", "message":"email required"})",
+            res.set_content(R"({"success":"false", "message":"Email required"})",
                             "application/json");
             return;
         }
 
         if(User::emailExist(email) != 0){
             res.status = Conflict_409;
-            res.set_content(R"({"success":"true", "exists":"true"})",
+            res.set_content(R"({"success":"true", "exists":"true", "message":"Email has already been registered"})",
                             "application/json");
             return;
         }
 
         res.status = OK_200;
-        res.set_content(R"({"success":"true", "exists":"false"})",
+        res.set_content(R"({"success":"true", "exists":"false", "message":"Email is available"})",
                         "application/json");
     });
 
