@@ -30,7 +30,8 @@ endif()
 # ---------------------------
 add_library(lockr STATIC
         src/utils/string.cpp
-        src/utils/configHandler.cpp
+        src/utils/config.cpp
+        src/utils/user.cpp
         src/db.cpp
 )
 set_target_properties(lockr PROPERTIES POSITION_INDEPENDENT_CODE ON)

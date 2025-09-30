@@ -7,11 +7,34 @@ extern "C" {
 
 class User {
 public:
-    bool createUser(const std::string& username, const std::string& email, const std::string& password);
-private:
-    int hashPassword(const std::string& password, std::string& outHash);
-    bool save();
+    static int hashPassword(const std::string& password, std::string& outHash);
 
+    int save();
+
+    static int usernameExist(std::string username);
+    static int emailExist(std::string email);
+
+    std::string getUsername() {
+        return u_username;
+    }
+    void setUsername(std::string username) {
+        u_username = username;
+    }
+
+    std::string getEmail() {
+        return u_email;
+    }
+    void setEmail(std::string email) {
+        u_email = email;
+    }
+
+    std::string getPassword() {
+        return u_password;
+    }
+    void setPassword(std::string password) {
+        u_password = password;
+    }
+private:
     std::string u_username;
     std::string u_email;
     std::string u_password;

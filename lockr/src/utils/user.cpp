@@ -1,17 +1,13 @@
 #include "utils/user.h"
 
-bool User::createUser(const std::string &username, const std::string &email, const std::string &password) {
-    u_username = username;
-    u_email = email;
+#include "lockr/db.h"
 
-    std::string hash;
-    if (hashPassword(password, hash) != 0) {
-        return false;
-    }
-    u_password = hash;
+#include <bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/builder/basic/kvp.hpp>
+#include <iostream>
 
-    return save();
-}
+using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::make_document;
 
 int User::hashPassword(const std::string& password, std::string& outHash) {
     char salt[BCRYPT_HASHSIZE];
@@ -28,6 +24,39 @@ int User::hashPassword(const std::string& password, std::string& outHash) {
     return 0;
 }
 
-bool User::save() {
+int User::save() {
+    if(usernameExist(u_username)) return 1;
+    if(emailExist(u_email)) return 2;
 
+    auto doc = make_document(
+        kvp("username", u_username),
+        kvp("email", u_email),
+        kvp("password", u_password),
+        kvp("companies", ""),
+        kvp("data", "")
+    );
+
+    std::string dbError;
+    int ec = DB::insert("users", std::move(doc), &dbError);
+
+    if(ec != 0){
+        return 3;
+    }
+
+    std::cout << dbError;
+    return 3;
+}
+
+int User::usernameExist(std::string username) {
+    if(!DB::exists("users", make_document(kvp("username", username)))){
+        return 0;
+    }
+    return 1;
+}
+
+int User::emailExist(std::string email) {
+    if(!DB::exists("users", make_document(kvp("email", email)))){
+        return 0;
+    }
+    return 1;
 }

@@ -1,54 +1,140 @@
 #include "httplib.h"
-#include "utils/configHandler.h"
+#include "utils/config.h"
 #include <string>
-#include "lockr/db.hpp"
+#include "lockr/db.h"
+#include "utils/user.h"
+#include "nlohmann/json.hpp"
 
-
-
-
+using nlohmann::json;
 using namespace httplib;
 
 int main() {
     Server svr;
 
     //init db
-    const char* env = std::getenv("MONGODB_URI");
-    std::string uri = env ? env : "mongodb://127.0.0.1:37017";
+    Config::initialize();
+    DB::connect();
 
-    lockr::DB db{ uri };
-
-    svr.Get("/test", [](const Request& req, Response& res) {
-        try {
-            char salt[BCRYPT_HASHSIZE];  // encoded salt
-            char hash[BCRYPT_HASHSIZE];  // encoded hash ($2b$...)
-
-            if (bcrypt_gensalt(12, salt) != 0) {
-                res.status = 500;
-                res.set_content("Failed to generate salt", "text/plain");
-                return;
-            }
-            if (bcrypt_hashpw("secret", salt, hash) != 0) {
-                res.status = 500;
-                res.set_content("Failed to compute hash", "text/plain");
-                return;
-            }
-
-            int rc = bcrypt_checkpw("secret", hash);
-            bool match = (rc == 0);
-
-            // Construct response with hash + match flag
-            std::string body = std::string("hash: ") + hash +
-                               "\nmatch: " + (match ? "true" : "false");
-
-            res.status = 200;
-            res.set_content(body, "text/plain");
-        } catch (const std::exception& e) {
-            res.status = 500;
-            res.set_content(std::string("Config error: ") + e.what(), "text/plain");
+    svr.Post("/api/user/create", [](const Request& req, Response& res) {
+        json body = json::parse(req.body, /*callback*/nullptr, /*allow_exceptions*/false);
+        if (body.is_discarded()) {
+            res.status = BadRequest_400;
+            res.set_content(R"({"success":"false", "message":"invalid JSON"})", "application/json");
+            return;
         }
+
+        std::string username = body.value("username", "");
+        std::string email    = body.value("email", "");
+        std::string password = body.value("password", "");
+
+        if (username.empty() || email.empty() || password.empty()) {
+            res.status = BadRequest_400;
+            res.set_content(R"({"success":"false", "message":"username, email, password required"})",
+                            "application/json");
+            return;
+        }
+
+        if(User::usernameExist(username) != 0){
+            res.status = Conflict_409;
+            res.set_content(R"({"success":"false", "message":"username already exists"})",
+                            "application/json");
+            return;
+        }
+
+        if(User::emailExist(email) != 0){
+            res.status = Conflict_409;
+            res.set_content(R"({"success":"false", "message":"email already exists"})",
+                            "application/json");
+            return;
+        }
+
+        User user;
+        user.setUsername(username);
+        user.setEmail(email);
+
+        std::string passwordHash;
+        const int rc = User::hashPassword(password, passwordHash);
+        if (rc != 0) {
+            res.status = InternalServerError_500;
+            return;
+        }
+
+        user.setPassword(passwordHash);
+
+        int ec = user.save();
+        if (ec == 1) {
+            res.status = Conflict_409;
+            res.set_content(R"({"success":"false", "message":"Username already exists"})", "application/json");
+            return;
+        } else if(ec == 2) {
+            res.status = Conflict_409;
+            res.set_content(R"({"success":"false", "message":"Email already exists"})", "application/json");
+            return;
+        } else if(ec == 3) {
+            res.status = InternalServerError_500;
+            return;
+        }
+
+        res.status = OK_200;
+        res.set_content(R"({"success":"true", "message":"User has been created"})", "application/json");
     });
 
+    svr.Get("/api/user/username", [](const Request& req, Response& res) {
+        json body = json::parse(req.body, /*callback*/nullptr, /*allow_exceptions*/false);
+        if (body.is_discarded()) {
+            res.status = BadRequest_400;
+            res.set_content(R"({"success":"false", "message":"invalid JSON"})", "application/json");
+            return;
+        }
 
+        std::string username = body.value("username", "");
+
+        if (username.empty()) {
+            res.status = BadRequest_400;
+            res.set_content(R"({"success":"false", "message":"username required"})",
+                            "application/json");
+            return;
+        }
+
+        if(User::usernameExist(username) != 0){
+            res.status = Conflict_409;
+            res.set_content(R"({"success":"true", "exists":"true"})",
+                            "application/json");
+            return;
+        }
+
+        res.status = OK_200;
+        res.set_content(R"({"success":"true", "exists":"false"})",
+                        "application/json");
+    });
+    svr.Get("/api/user/email", [](const Request& req, Response& res) {
+        json body = json::parse(req.body, /*callback*/nullptr, /*allow_exceptions*/false);
+        if (body.is_discarded()) {
+            res.status = BadRequest_400;
+            res.set_content(R"({"success":"false", "message":"invalid JSON"})", "application/json");
+            return;
+        }
+
+        std::string email = body.value("email", "");
+
+        if (email.empty()) {
+            res.status = BadRequest_400;
+            res.set_content(R"({"success":"false", "message":"email required"})",
+                            "application/json");
+            return;
+        }
+
+        if(User::emailExist(email) != 0){
+            res.status = Conflict_409;
+            res.set_content(R"({"success":"true", "exists":"true"})",
+                            "application/json");
+            return;
+        }
+
+        res.status = OK_200;
+        res.set_content(R"({"success":"true", "exists":"false"})",
+                        "application/json");
+    });
 
     svr.listen("0.0.0.0", 8080);
     return 0;
