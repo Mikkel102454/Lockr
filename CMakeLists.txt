@@ -27,6 +27,12 @@ add_executable(Lockr
         lockr/src/main.cpp
 )
 
+add_custom_command(TARGET Lockr POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/lockr/.env
+        $<TARGET_FILE_DIR:Lockr>/.env
+)
+
 find_package(mongocxx CONFIG REQUIRED)
 find_package(bsoncxx CONFIG REQUIRED)
 target_link_libraries(Lockr PRIVATE mongo::mongocxx_static mongo::bsoncxx_static)

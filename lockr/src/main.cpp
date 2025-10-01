@@ -1,5 +1,6 @@
 #include "httplib.h"
 #include "utils/config.h"
+#include "utils/env.h"
 #include <string>
 #include "lockr/db.h"
 #include "utils/user.h"
@@ -12,6 +13,7 @@ int main() {
     Server svr;
 
     //init db
+    InitDotEnv();
     Config::initialize();
     DB::connect();
 

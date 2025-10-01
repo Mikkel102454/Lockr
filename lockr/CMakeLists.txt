@@ -31,6 +31,7 @@ endif()
 add_library(lockr STATIC
         src/utils/string.cpp
         src/utils/config.cpp
+        src/utils/env.cpp
         src/utils/user.cpp
         src/db.cpp
 )

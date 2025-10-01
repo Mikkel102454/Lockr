@@ -6,8 +6,3 @@ server:
 logging:
   level: "debug"
   file: "server.log"
-
-#temp
-database:
-  uri: "mongodb://lockr_app:password@127.0.0.1:27017/lockr?authSource=lockr"
-  name: "lockr"

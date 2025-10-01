@@ -8,4 +8,5 @@ public:
     static void initialize();
 private:
     inline static YAML::Node CONFIG{};
+    inline static YAML::Node ENV{};
 };

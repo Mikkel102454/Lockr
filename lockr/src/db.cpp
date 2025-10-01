@@ -1,5 +1,6 @@
 #include "lockr/db.h"
 #include "utils/config.h"
+#include "utils/env.h"
 
 #include <mongocxx/instance.hpp>
 #include <mongocxx/client.hpp>
@@ -21,10 +22,10 @@ bool DB::connect() {
     try {
         static mongocxx::instance inst{};
 
-        auto uri = mongocxx::uri{Config::getString("database:uri")};
+        auto uri = mongocxx::uri{GetEnv("DB_URI")};
         auto tmp = std::make_unique<mongocxx::client>(uri);
 
-        db_database = (*tmp)[Config::getString("database:name")];
+        db_database = (*tmp)[GetEnv("DB_NAME")];
         db_client = std::move(tmp);
 
         ensureTables();
