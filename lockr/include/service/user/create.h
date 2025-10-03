@@ -1,4 +1,7 @@
 #pragma once
+
 #include <string>
 
-int CreateUser(const std::string &username, const std::string &email, const std::string &password, std::string &response);
+using namespace std;
+
+int CreateUser(const string &username, const string &email, const string &password, string &response);

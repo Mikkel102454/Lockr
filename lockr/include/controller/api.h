@@ -5,4 +5,4 @@
 using namespace httplib;
 using namespace std;
 
-static void InitEndpoint(Server &svr);
+void InitEndpoint(Server &svr);

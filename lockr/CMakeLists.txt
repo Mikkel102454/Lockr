@@ -8,7 +8,6 @@ add_library(bcrypt_ow STATIC
         src/external/libbcrypt/crypt_blowfish.c
         src/external/libbcrypt/crypt_gensalt.c
         src/external/libbcrypt/ow-crypt.c
-        include/controller/api.h
 )
 set_target_properties(bcrypt_ow PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
@@ -36,12 +35,13 @@ add_library(lockr STATIC
         src/class/user.cpp
         src/db.cpp
 
-        src/controller/api.cpp
-        src/controller/api/user.cpp
-
         src/service/user/create.cpp
         src/service/user/delete.cpp
         src/service/user/exist.cpp
+
+        src/controller/api.cpp
+        src/controller/api/user.cpp
+
 )
 set_target_properties(lockr PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
