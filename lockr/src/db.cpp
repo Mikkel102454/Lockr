@@ -1,4 +1,4 @@
-#include "lockr/db.h"
+#include "db.h"
 #include "utils/config.h"
 #include "utils/env.h"
 

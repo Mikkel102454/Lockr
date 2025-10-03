@@ -2,8 +2,8 @@
 #include "utils/config.h"
 #include "utils/env.h"
 #include <string>
-#include "lockr/db.h"
-#include "utils/user.h"
+#include "../include/db.h"
+#include "../include/class/user.h"
 #include "nlohmann/json.hpp"
 
 using nlohmann::json;

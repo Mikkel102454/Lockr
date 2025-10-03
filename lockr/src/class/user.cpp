@@ -1,6 +1,6 @@
-#include "utils/user.h"
+#include "../../include/class/user.h"
 
-#include "lockr/db.h"
+#include "../../include/db.h"
 
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
