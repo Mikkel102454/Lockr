@@ -37,7 +37,7 @@ int User::save() {
     );
 
     std::string dbError;
-    int ec = DB::insert("users", std::move(doc), &dbError);
+    int ec = DB::insert("user", std::move(doc), &dbError);
 
     if(ec == 0) return 0;
     if(ec == 1) return 1;
@@ -48,14 +48,14 @@ int User::save() {
 }
 
 int User::usernameExist(std::string username) {
-    if(!DB::exists("users", make_document(kvp("username", username)))){
+    if(!DB::exists("user", make_document(kvp("username", username)))){
         return 0;
     }
     return 1;
 }
 
 int User::emailExist(std::string email) {
-    if(!DB::exists("users", make_document(kvp("email", email)))){
+    if(!DB::exists("user", make_document(kvp("email", email)))){
         return 0;
     }
     return 1;
