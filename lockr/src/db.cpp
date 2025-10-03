@@ -7,15 +7,15 @@
 #include <mongocxx/uri.hpp>
 #include <mongocxx/exception/exception.hpp>
 #include <mongocxx/collection.hpp>
-#include <mongocxx/options/insert.hpp>
 
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/document/view_or_value.hpp>
+#include <utility>
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
-std::unique_ptr<mongocxx::client> DB::db_client{};
+unique_ptr<mongocxx::client> DB::db_client{};
 mongocxx::database                 DB::db_database{};
 
 bool DB::connect() {
@@ -23,28 +23,28 @@ bool DB::connect() {
         static mongocxx::instance inst{};
 
         auto uri = mongocxx::uri{GetEnv("DB_URI")};
-        auto tmp = std::make_unique<mongocxx::client>(uri);
+        auto tmp = make_unique<mongocxx::client>(uri);
 
         db_database = (*tmp)[GetEnv("DB_NAME")];
-        db_client = std::move(tmp);
+        db_client = move(tmp);
 
         ensureTables();
         return true;
-    } catch (const std::exception &e) {
-        std::cerr << "DB connect error: " << e.what() << "\n";
+    } catch (const exception &e) {
+        cerr << "DB connect error: " << e.what() << "\n";
         db_client.reset();
         return false;
     }
 }
 
 
-int DB::insert(const std::string& coll,
-                  bsoncxx::document::view_or_value doc,
-                  std::string* out_err) {
+int DB::insert(const string& coll,
+                  bsoncxx::document::view_or_value document,
+                  string* out_err) {
     try {
         auto c = db_database[coll];
 
-        auto res = c.insert_one(doc);
+        auto res = c.insert_one(move(document));
 
         if (!res) {
             if (out_err) *out_err = "unacknowledged write";
@@ -53,25 +53,25 @@ int DB::insert(const std::string& coll,
         return 0; // success
     }
     catch (const mongocxx::exception& e) {
-        const std::string msg = e.what();
+        const string msg = e.what();
         if (out_err) *out_err = msg;
 
         // Errors
-        if (msg.find("E11000") != std::string::npos)                return 1; // duplicate key
-        if (msg.find("AuthenticationFailed") != std::string::npos
-            || msg.find("auth") != std::string::npos)               return 2; // auth
-        if (msg.find("No suitable servers") != std::string::npos
-            || msg.find("socket") != std::string::npos
-            || msg.find("connection") != std::string::npos)         return 3; // network/selection
-        if (msg.find("timeout") != std::string::npos
-            || msg.find("timed out") != std::string::npos)          return 4; // timeout
-        if (msg.find("validation") != std::string::npos)            return 5; // schema/validator
-        if (msg.find("WriteConcern") != std::string::npos
-            || msg.find("wtimeout") != std::string::npos)           return 6; // write concern
+        if (msg.find("E11000") != string::npos)                return 1; // duplicate key
+        if (msg.find("AuthenticationFailed") != string::npos
+            || msg.find("auth") != string::npos)               return 2; // auth
+        if (msg.find("No suitable servers") != string::npos
+            || msg.find("socket") != string::npos
+            || msg.find("connection") != string::npos)         return 3; // network/selection
+        if (msg.find("timeout") != string::npos
+            || msg.find("timed out") != string::npos)          return 4; // timeout
+        if (msg.find("validation") != string::npos)            return 5; // schema/validator
+        if (msg.find("WriteConcern") != string::npos
+            || msg.find("wtimeout") != string::npos)           return 6; // write concern
 
         return 7; // other MongoDB error
     }
-    catch (const std::exception& e) {
+    catch (const exception& e) {
         if (out_err) *out_err = e.what();
         return 8;
     }
@@ -80,8 +80,8 @@ int DB::insert(const std::string& coll,
 
 void DB::ensureTables() {
 
-    // Users
-    auto coll = db_database["users"];
+    // user
+    auto coll = db_database["user"];
     mongocxx::options::index uniq;
     uniq.unique(true);
 
@@ -91,10 +91,10 @@ void DB::ensureTables() {
 }
 
 
-bool DB::exists(const std::string& coll,
+bool DB::exists(const string& coll,
                 bsoncxx::document::view_or_value filter) {
     auto c = db_database[coll];
     mongocxx::options::find opts;
     opts.limit(1);
-    return static_cast<bool>(c.find_one(filter, opts));
+    return static_cast<bool>(c.find_one(move(filter), opts));
 }

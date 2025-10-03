@@ -9,7 +9,7 @@
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
-int User::hashPassword(const std::string& password, std::string& outHash) {
+int User::hashPassword(const string& password, string& outHash) {
     char salt[BCRYPT_HASHSIZE];
     char hash[BCRYPT_HASHSIZE];
 
@@ -36,25 +36,25 @@ int User::save() {
         kvp("data", "")
     );
 
-    std::string dbError;
-    int ec = DB::insert("user", std::move(doc), &dbError);
+    string dbError;
+    int ec = DB::insert("user", move(doc), &dbError);
 
     if(ec == 0) return 0;
     if(ec == 1) return 1;
     if(ec == 2) return 2;
 
-    std::cout << dbError;
+    cout << dbError;
     return 3;
 }
 
-int User::usernameExist(std::string username) {
+int User::usernameExist(string username) {
     if(!DB::exists("user", make_document(kvp("username", username)))){
         return 0;
     }
     return 1;
 }
 
-int User::emailExist(std::string email) {
+int User::emailExist(string email) {
     if(!DB::exists("user", make_document(kvp("email", email)))){
         return 0;
     }

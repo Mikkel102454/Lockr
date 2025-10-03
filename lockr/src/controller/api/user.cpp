@@ -12,11 +12,11 @@ void PostCreateUser(const Request& req, Response& res) {
         res.set_content(R"({"success":"false", "message":"Invalid JSON"})", "application/json");
     }
 
-    std::string user = body["username"];
-    std::string email = body["email"];
-    std::string pass = body["password"];
+    string user = body["username"];
+    string email = body["email"];
+    string pass = body["password"];
 
-    std::string msg;
+    string msg;
 
     res.status = CreateUser(user, email, pass, msg);
     res.set_content(res.body, msg);

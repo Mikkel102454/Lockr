@@ -1,6 +1,8 @@
 #include "httplib.h"
 #include "utils/config.h"
 #include "utils/env.h"
+
+#include "controller/api.h"
 #include <string>
 #include "../include/db.h"
 #include "../include/class/user.h"
@@ -17,71 +19,7 @@ int main() {
     Config::initialize();
     DB::connect();
 
-    svr.Post("/api/users/create", [](const Request& req, Response& res) {
-        json body = json::parse(req.body, /*callback*/nullptr, /*allow_exceptions*/false);
-        if (body.is_discarded()) {
-            res.status = BadRequest_400;
-            res.set_content(R"({"success":"false", "message":"Invalid JSON"})", "application/json");
-            return;
-        }
-
-        std::string username = body.value("username", "");
-        std::string email    = body.value("email", "");
-        std::string password = body.value("password", "");
-
-        if (username.empty() || email.empty() || password.empty()) {
-            res.status = BadRequest_400;
-            res.set_content(R"({"success":"false", "message":"Username, email, password required"})",
-                            "application/json");
-            return;
-        }
-
-        if(User::usernameExist(username) != 0){
-            res.status = Conflict_409;
-            res.set_content(R"({"success":"false", "message":"Username already exists"})",
-                            "application/json");
-            return;
-        }
-
-        if(User::emailExist(email) != 0){
-            res.status = Conflict_409;
-            res.set_content(R"({"success":"false", "message":"Email already exists"})",
-                            "application/json");
-            return;
-        }
-
-        User user;
-        user.setUsername(username);
-        user.setEmail(email);
-
-        std::string passwordHash;
-        const int rc = User::hashPassword(password, passwordHash);
-        if (rc != 0) {
-            res.status = InternalServerError_500;
-            res.set_content(R"({"success":"false", "message":"User could not be created"})", "application/json");
-            return;
-        }
-
-        user.setPassword(passwordHash);
-
-        int ec = user.save();
-        if (ec == 1) {
-            res.status = Conflict_409;
-            res.set_content(R"({"success":"false", "message":"Username already exists"})", "application/json");
-            return;
-        } else if(ec == 2) {
-            res.status = Conflict_409;
-            res.set_content(R"({"success":"false", "message":"Email already exists"})", "application/json");
-            return;
-        } else if(ec == 3) {
-            res.status = InternalServerError_500;
-            res.set_content(R"({"success":"false", "message":"User could not be created"})", "application/json");
-            return;
-        }
-
-        res.status = OK_200;
-        res.set_content(R"({"success":"true", "message":"User has been created"})", "application/json");
-    });
+    InitEndpoint(svr);
 
     svr.Get("/api/users/username", [](const Request& req, Response& res) {
         if (!req.has_param("username")) {

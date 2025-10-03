@@ -1,6 +1,6 @@
 #include "controller/api/user.h"
 
-void initEndpoint(Server &svr) {
+void InitEndpoint(Server &svr) {
     // ----------------------
     //          USER
     // ----------------------

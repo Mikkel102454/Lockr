@@ -6,8 +6,9 @@
 
 using nlohmann::json;
 using namespace httplib;
+using namespace std;
 
-int CreateUser(const std::string &username, const std::string &email, const std::string &password, std::string &response) {
+int CreateUser(const string &username, const string &email, const string &password, string &response) {
     if (username.empty() || email.empty() || password.empty()) {
         response = "{'success':'false', 'message':'Username, email, password required'}";
         return 400;
@@ -27,7 +28,7 @@ int CreateUser(const std::string &username, const std::string &email, const std:
     user.setUsername(username);
     user.setEmail(email);
 
-    std::string passwordHash;
+    string passwordHash;
     const int rc = User::hashPassword(password, passwordHash);
     if (rc != 0) {
         response = "{'success':'false', 'message':'User could not be created'}";

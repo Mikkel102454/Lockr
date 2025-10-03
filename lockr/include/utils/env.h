@@ -2,5 +2,7 @@
 
 #include <string>
 
+using namespace std;
+
 void InitDotEnv();
-std::string GetEnv(const std::string& key);
+string GetEnv(const string& key);
