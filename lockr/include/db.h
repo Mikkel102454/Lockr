@@ -1,36 +1,39 @@
-#pragma once
+#ifndef LOCKR_DB
+#define LOCKR_DB 1
 
 #include <mongocxx/database.hpp>
 #include <mongocxx/instance.hpp>
 
 namespace mongocxx { class client; }
-using namespace std;
+namespace lockr {
+    class DB {
+    public:
+        static int Insert(const std::string& coll,
+                          bsoncxx::document::view_or_value document,
+                          std::string* out_err);
 
-class DB {
-public:
-    static int insert(const string& coll,
-                      const bsoncxx::document::view_or_value document,
-                      string* out_err);
+        static std::optional<bsoncxx::document::value> getOne(const std::string& coll,
+                                                         bsoncxx::document::view_or_value filter);
 
-    static optional<bsoncxx::document::value> getOne(const string& coll,
-                bsoncxx::document::view_or_value filter);
+        static bool Exists(const std::string& coll,
+                           bsoncxx::document::view_or_value filter);
 
-    static bool exists(const string& coll,
-                       bsoncxx::document::view_or_value filter);
+        static bool DeleteOne(const std::string& coll,
+                              bsoncxx::document::view_or_value filter);
 
-    static bool deleteOne(const std::string& coll,
-                       bsoncxx::document::view_or_value filter);
+        static bool DeleteAll(const std::string& coll,
+                              bsoncxx::document::view_or_value filter);
 
-    static bool deleteAll(const std::string& coll,
-                   bsoncxx::document::view_or_value filter);
-
-    static bool connect();
+        static bool Connect();
 
 
-    static mongocxx::database& database() { return db_database; }
-private:
-    static unique_ptr<mongocxx::client> db_client;
-    static mongocxx::database db_database;
+        static mongocxx::database& Database() { return m_database; }
+    private:
+        static std::unique_ptr<mongocxx::client> m_client;
+        static mongocxx::database m_database;
 
-    static void ensureTables();
-};
+        static void EnsureTables();
+    };
+}
+
+#endif

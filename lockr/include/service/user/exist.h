@@ -1,8 +1,12 @@
-#pragma once
+#ifndef LOCKR_SERVICE_USER_EXIST
+#define LOCKR_SERVICE_USER_EXIST 1
 
 #include <string>
+#include "nlohmann/json.hpp"
 
-using namespace std;
+namespace lockr {
+    int CheckUsername(const std::string &username, nlohmann::json &response);
+    int CheckEmail(const std::string &email, nlohmann::json &response);
+}
 
-int CheckUsername(const string &username, string &response);
-int CheckEmail(const string &email, string &response);
+#endif

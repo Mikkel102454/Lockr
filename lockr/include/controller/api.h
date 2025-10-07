@@ -1,8 +1,10 @@
-#pragma once
+#ifndef LOCKR_CONTROLLER_API
+#define LOCKR_CONTROLLER_API 1
 
 #include "httplib.h"
 
-using namespace httplib;
-using namespace std;
+namespace lockr {
+    void InitEndpoint(httplib::Server &svr);
+}
 
-void InitEndpoint(Server &svr);
+#endif

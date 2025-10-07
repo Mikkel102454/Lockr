@@ -3,12 +3,15 @@
 #include "class/user.h"
 #include "service/auth/refresh.h"
 
-bool Login(const string &email, const string &password, string &outToken) {
-    if (!User::Authenticate(email, password)) {
-        return false;
+namespace lockr {
+    bool Login(const std::string &email, const std::string &password, std::string &outToken) {
+        if (!User::Authenticate(email, password)) {
+            return false;
+        }
+
+
+        GenerateRefreshToken(outToken, User::GetUserId(email));
+        return true;
     }
 
-
-    GenerateRefreshToken(outToken, User::GetUserId(email));
-    return true;
 }

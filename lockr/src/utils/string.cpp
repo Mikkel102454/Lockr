@@ -1,11 +1,13 @@
 #include "utils/string.h"
 
-vector<string> Split(const string& s, char delimiter) {
-    vector<string> tokens;
-    stringstream ss(s);
-    string item;
-    while (getline(ss, item, delimiter)) {
-        tokens.push_back(item);
+namespace lockr {
+    std::vector<std::string> Split(const std::string& s, char delimiter) {
+        std::vector<std::string> tokens;
+        std::stringstream ss(s);
+        std::string item;
+        while (getline(ss, item, delimiter)) {
+            tokens.push_back(item);
+        }
+        return tokens;
     }
-    return tokens;
 }

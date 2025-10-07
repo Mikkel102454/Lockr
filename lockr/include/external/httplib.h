@@ -221,8 +221,8 @@ using ssize_t = __int64;
 #endif // NOMINMAX
 
 #include <io.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 
 #if defined(__has_include)
 #if __has_include(<afunix.h>)

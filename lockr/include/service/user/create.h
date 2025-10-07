@@ -1,7 +1,12 @@
-#pragma once
+#ifndef LOCKR_SERVICE_USER_CREATE
+#define LOCKR_SERVICE_USER_CREATE 1
 
 #include <string>
+#include "nlohmann/json.hpp"
 
-using namespace std;
+namespace lockr {
+    int CreateUser(const std::string &username, const std::string &email,
+                   const std::string &password, nlohmann::json &response);
+}
 
-int CreateUser(const string &username, const string &email, const string &password, string &response);
+#endif

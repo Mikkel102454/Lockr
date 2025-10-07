@@ -1,8 +1,11 @@
-#pragma once
+#ifndef LOCKR_SERVICE_AUTH_ACCESS
+#define LOCKR_SERVICE_AUTH_ACCESS 1
 
 #include <string>
 
-using namespace std;
+namespace lockr {
+    bool ValidateAccessToken(const std::string &token);
+    int CreateNewAccessToken(std::string &outToken, const std::string &userId);
+}
 
-bool ValidateAccessToken(const string &token);
-int CreateNewAccessToken(const string &refreshToken, string &outToken);
+#endif

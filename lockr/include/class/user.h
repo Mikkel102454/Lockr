@@ -1,56 +1,38 @@
-#pragma once
+#ifndef LOCKR_CLASS_USER
+#define LOCKR_CLASS_USER 1
 
 #include <string>
 extern "C" {
 #include "external/libbcrypt/libbcrypt.h"
 }
 
-using namespace std;
+namespace lockr {
+    class User {
+    public:
+        static int HashPassword(const std::string& password, std::string& outHash);
 
-class User {
-public:
-    static int hashPassword(const string& password, string& outHash);
+        static bool UsernameExist(const std::string& username);
+        static bool EmailExist(const std::string& email);
 
-    int save();
+        static std::string GetUserId(const std::string& email);
 
-    static int usernameExist(string username);
-    static int emailExist(string email);
+        static bool Authenticate(const std::string& email, const std::string& password);
 
-    static string GetUserId(const string &email);
-    static string
-    GetIdFromRefreshToken(const string &token);
+        int save();
 
-    static bool ValidateRefreshToken(const string &token);
-    static bool DeleteRefreshToken(const string &token);
-    static bool DeleteAllRefreshToken(const string &userId);
-    static bool InsertRefreshToken(string &token, const string &userId);
+        std::string_view getUsername() { return m_username; }
+        void setUsername(const std::string& username) { m_username = username; }
 
-    static bool Authenticate(const string &email, const string &password);
+        std::string_view getEmail() { return m_email; }
+        void setEmail(const std::string& email) { m_email = email; }
 
-    string getUsername() {
-        return u_username;
-    }
-    void setUsername(const string &username) {
-        u_username = username;
-    }
+        std::string_view getPassword() { return m_password; }
+        void setPassword(const std::string& password) { m_password = password; }
+    private:
+        std::string m_username;
+        std::string m_email;
+        std::string m_password;
+    };
+}
 
-    string getEmail() {
-        return u_email;
-    }
-    void setEmail(const string &email) {
-        u_email = email;
-    }
-
-    string getPassword() {
-        return u_password;
-    }
-    void setPassword(const string &password) {
-        u_password = password;
-    }
-private:
-    static string hashToken(const string &token);
-
-    string u_username;
-    string u_email;
-    string u_password;
-};
+#endif

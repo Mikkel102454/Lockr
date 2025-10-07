@@ -1,7 +1,11 @@
-#pragma once
+#ifndef LOCKR_SERVICE_USER_LOGIN
+#define LOCKR_SERVICE_USER_LOGIN 1
 
 #include <string>
 
-using namespace std;
+namespace lockr {
+    bool Login(const std::string &email, const std::string &password,
+               std::string &outToken);
+}
 
-bool Login(const string &email, const string &password, string &outToken);
+#endif

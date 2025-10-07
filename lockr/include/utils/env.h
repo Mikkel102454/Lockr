@@ -1,8 +1,11 @@
-#pragma once
+#ifndef LOCKR_UTILS_ENV
+#define LOCKR_UTILS_ENV 1
 
 #include <string>
 
-using namespace std;
+namespace lockr {
+    void InitDotEnv();
+    std::string GetEnv(const std::string& key);
+}
 
-void InitDotEnv();
-string GetEnv(const string& key);
+#endif

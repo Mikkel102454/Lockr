@@ -1,23 +1,19 @@
-#include "httplib.h"
 #include "utils/config.h"
 #include "utils/env.h"
-
 #include "controller/api.h"
 #include "db.h"
-#include "nlohmann/json.hpp"
 
-using nlohmann::json;
-using namespace httplib;
+#include "httplib.h"
 
 int main() {
-    Server svr;
+    httplib::Server svr;
 
     //init db
-    InitDotEnv();
-    Config::initialize();
-    DB::connect();
+    lockr::InitDotEnv();
+    lockr::Config::Initialize();
+    lockr::DB::Connect();
 
-    InitEndpoint(svr);
+    lockr::InitEndpoint(svr);
 
     svr.listen("0.0.0.0", 8080);
     return 0;
