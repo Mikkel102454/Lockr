@@ -39,14 +39,18 @@ add_library(lockr STATIC
         src/service/user/delete.cpp
         src/service/user/exist.cpp
 
+        src/service/auth/access.cpp
+
         src/controller/api.cpp
         src/controller/api/user.cpp
+        src/controller/api/token.cpp
 
 )
 set_target_properties(lockr PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(lockr PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/external
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 

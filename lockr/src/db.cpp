@@ -22,7 +22,12 @@ bool DB::connect() {
     try {
         static mongocxx::instance inst{};
 
-        auto uri = mongocxx::uri{GetEnv("DB_URI")};
+        string uriString =
+            "mongodb://" + GetEnv("DB_USER") + ":" + GetEnv("DB_PASS") +
+            "@" + GetEnv("DB_IP") + "/" + GetEnv("DB_NAME") +
+            "?authSource=" + GetEnv("DB_NAME");
+
+        auto uri = mongocxx::uri{uriString};
         auto tmp = make_unique<mongocxx::client>(uri);
 
         db_database = (*tmp)[GetEnv("DB_NAME")];
