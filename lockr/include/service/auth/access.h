@@ -4,4 +4,5 @@
 
 using namespace std;
 
-static bool CreateNewAccessToken(const string &refreshToken, string &outToken)
+bool ValidateAccessToken(const string &token);
+int CreateNewAccessToken(const string &refreshToken, string &outToken);

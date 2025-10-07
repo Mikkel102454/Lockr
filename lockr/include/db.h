@@ -12,8 +12,17 @@ public:
                       const bsoncxx::document::view_or_value document,
                       string* out_err);
 
+    static optional<bsoncxx::document::value> getOne(const string& coll,
+                bsoncxx::document::view_or_value filter);
+
     static bool exists(const string& coll,
                        bsoncxx::document::view_or_value filter);
+
+    static bool deleteOne(const std::string& coll,
+                       bsoncxx::document::view_or_value filter);
+
+    static bool deleteAll(const std::string& coll,
+                   bsoncxx::document::view_or_value filter);
 
     static bool connect();
 

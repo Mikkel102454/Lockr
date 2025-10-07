@@ -95,6 +95,16 @@ void DB::ensureTables() {
     coll.create_index(make_document(kvp("companies", 1)));
 }
 
+optional<bsoncxx::document::value> DB::getOne(const string& coll,
+                bsoncxx::document::view_or_value filter) {
+    auto c = db_database[coll];
+    mongocxx::options::find opts;
+    opts.limit(1);
+    if (auto doc = c.find_one(std::move(filter), opts)) {
+        return std::move(*doc);
+    }
+    return std::nullopt;
+}
 
 bool DB::exists(const string& coll,
                 bsoncxx::document::view_or_value filter) {
@@ -102,4 +112,18 @@ bool DB::exists(const string& coll,
     mongocxx::options::find opts;
     opts.limit(1);
     return static_cast<bool>(c.find_one(move(filter), opts));
+}
+
+bool DB::deleteOne(const std::string& coll,
+                   bsoncxx::document::view_or_value filter) {
+    auto c = db_database[coll];
+    auto res = c.delete_one(std::move(filter));
+    return res && res->deleted_count() == 1;
+}
+
+bool DB::deleteAll(const std::string& coll,
+                   bsoncxx::document::view_or_value filter) {
+    auto c = db_database[coll];
+    auto res = c.delete_many(std::move(filter));
+    return res && res->deleted_count() > 0;
 }

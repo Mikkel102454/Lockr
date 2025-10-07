@@ -2,20 +2,28 @@
 #include <iostream>
 #include <random>
 #include <iomanip>
+#include <bsoncxx/builder/basic/document.hpp>
 
-bool GenerateRefreshToken(std::string &outToken) {
-    return true;
+#include "db.h"
+#include "class/user.h"
+
+using namespace bsoncxx::builder::basic;
+
+bool GenerateRefreshToken(std::string &outToken, const string &userId) {
+    return User::InsertRefreshToken(outToken, userId);
 }
 bool InvalidateRefreshToken(const string &token) {
-    return true;
+    return User::DeleteRefreshToken(token);
 }
 
-bool InvalidateUserRefreshToken(const string &userUuid) {
-    return true;
+bool InvalidateUserRefreshToken(const string &userId) {
+    return User::DeleteAllRefreshToken(userId);
 }
 
-bool ValidateRefreshToken(string outToken){
-    GenerateRefreshToken(outToken);
+bool ValidateRefreshToken(const string &token){
+    return User::ValidateRefreshToken(token);
+}
 
-    return true;
+string GetIdFromRefreshToken(const string &token){
+    return User::GetIdFromRefreshToken(token);
 }

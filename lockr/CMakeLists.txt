@@ -40,6 +40,8 @@ add_library(lockr STATIC
         src/service/user/exist.cpp
 
         src/service/auth/access.cpp
+        src/service/auth/refresh.cpp
+        src/service/user/login.cpp
 
         src/controller/api.cpp
         src/controller/api/user.cpp
@@ -73,8 +75,18 @@ target_link_libraries(lockr PUBLIC yaml-cpp bcrypt_ow)
 # ---------------------------
 find_package(mongocxx CONFIG REQUIRED)
 find_package(bsoncxx CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 
+# ... (everything you already have)
+
+# Link Mongo & OpenSSL to lockr
 target_link_libraries(lockr PRIVATE
         mongo::mongocxx_static
         mongo::bsoncxx_static
+        OpenSSL::SSL
+        OpenSSL::Crypto
 )
+
+if (WIN32)
+    target_link_libraries(lockr PRIVATE ws2_32 crypt32)
+endif()
