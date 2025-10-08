@@ -27,10 +27,10 @@ namespace lockr {
         static bool Connect();
 
 
-        static mongocxx::database& Database() { return m_database; }
+        static mongocxx::database& Database() { return mDatabase; }
     private:
-        static std::unique_ptr<mongocxx::client> m_client;
-        static mongocxx::database m_database;
+        static std::unique_ptr<mongocxx::client> mClient;
+        static mongocxx::database mDatabase;
 
         static void EnsureTables();
     };

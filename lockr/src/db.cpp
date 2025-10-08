@@ -13,8 +13,8 @@
 #include <utility>
 
 namespace lockr {
-    std::unique_ptr<mongocxx::client> DB::m_client{};
-    mongocxx::database                 DB::m_database{};
+    std::unique_ptr<mongocxx::client> DB::mClient{};
+    mongocxx::database                 DB::mDatabase{};
 
     bool DB::Connect() {
         try {
@@ -28,14 +28,14 @@ namespace lockr {
             auto uri = mongocxx::uri{uriString};
             auto tmp = std::make_unique<mongocxx::client>(uri);
 
-            m_database = (*tmp)[GetEnv("DB_NAME")];
-            m_client = std::move(tmp);
+            mDatabase = (*tmp)[GetEnv("DB_NAME")];
+            mClient = std::move(tmp);
 
             EnsureTables();
             return true;
         } catch (const std::exception &e) {
             std::cerr << "DB connect error: " << e.what() << "\n";
-            m_client.reset();
+            mClient.reset();
             return false;
         }
     }
@@ -45,7 +45,7 @@ namespace lockr {
                    bsoncxx::document::view_or_value document,
                    std::string* out_err) {
         try {
-            auto c = m_database[coll];
+            auto c = mDatabase[coll];
 
             auto res = c.insert_one(std::move(document));
 
@@ -84,7 +84,7 @@ namespace lockr {
     void DB::EnsureTables() {
 
         // user
-        auto coll = m_database["user"];
+        auto coll = mDatabase["user"];
         mongocxx::options::index uniq;
         uniq.unique(true);
 
@@ -100,7 +100,7 @@ namespace lockr {
 
     std::optional<bsoncxx::document::value> DB::getOne(const std::string& coll,
                                                        bsoncxx::document::view_or_value filter) {
-        auto c = m_database[coll];
+        auto c = mDatabase[coll];
         mongocxx::options::find opts;
         opts.limit(1);
         if (auto doc = c.find_one(std::move(filter), opts)) {
@@ -111,7 +111,7 @@ namespace lockr {
 
     bool DB::Exists(const std::string& coll,
                     bsoncxx::document::view_or_value filter) {
-        auto c = m_database[coll];
+        auto c = mDatabase[coll];
         mongocxx::options::find opts;
         opts.limit(1);
         return static_cast<bool>(c.find_one(std::move(filter), opts));
@@ -119,14 +119,14 @@ namespace lockr {
 
     bool DB::DeleteOne(const std::string& coll,
                        bsoncxx::document::view_or_value filter) {
-        auto c = m_database[coll];
+        auto c = mDatabase[coll];
         auto res = c.delete_one(std::move(filter));
         return res && res->deleted_count() == 1;
     }
 
     bool DB::DeleteAll(const std::string& coll,
                        bsoncxx::document::view_or_value filter) {
-        auto c = m_database[coll];
+        auto c = mDatabase[coll];
         auto res = c.delete_many(std::move(filter));
         return res && res->deleted_count() > 0;
     }

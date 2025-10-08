@@ -20,18 +20,18 @@ namespace lockr {
 
         int save();
 
-        std::string_view getUsername() { return m_username; }
-        void setUsername(const std::string& username) { m_username = username; }
+        std::string_view getUsername() { return mUsername; }
+        void setUsername(const std::string& username) { mUsername = username; }
 
-        std::string_view getEmail() { return m_email; }
-        void setEmail(const std::string& email) { m_email = email; }
+        std::string_view getEmail() { return mEmail; }
+        void setEmail(const std::string& email) { mEmail = email; }
 
-        std::string_view getPassword() { return m_password; }
-        void setPassword(const std::string& password) { m_password = password; }
+        std::string_view getPassword() { return mPassword; }
+        void setPassword(const std::string& password) { mPassword = password; }
     private:
-        std::string m_username;
-        std::string m_email;
-        std::string m_password;
+        std::string mUsername;
+        std::string mEmail;
+        std::string mPassword;
     };
 }
 

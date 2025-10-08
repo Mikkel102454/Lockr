@@ -48,7 +48,7 @@ namespace lockr {
         if (!ValidateRefreshToken(req.get_param_value("refreshToken"))) {
             nlohmann::json j = {
                     {"success", false},
-                    {"message", "Refresh token is invalid."},
+                    {"message", "Refresh token is invalid."}
             };
 
             res.status = httplib::Unauthorized_401;
@@ -65,22 +65,26 @@ namespace lockr {
     }
 
     void PostValidateAccessToken(const httplib::Request& req, httplib::Response& res) {
-        if (!ValidateAccessToken(req.get_param_value("accessToken"))) {
+        try{
+            if (!ValidateAccessToken(req.get_param_value("accessToken"))) {
+                nlohmann::json j = {
+                        {"success", false},
+                        {"message", "Access token is invalid."}
+                };
+
+                res.status = httplib::Unauthorized_401;
+                res.set_content(j.dump(), "application/json");
+                return;
+            }
             nlohmann::json j = {
-                    {"success", false},
-                    {"message", "Access token is invalid."},
+                    {"success", true},
+                    {"message", "Access token is valid."}
             };
 
-            res.status = httplib::Unauthorized_401;
+            res.status = httplib::OK_200;
             res.set_content(j.dump(), "application/json");
-            return;
+        }catch (std::exception &e){
+            std::cout << e.what();
         }
-        nlohmann::json j = {
-                {"success", true},
-                {"message", "Access token is valid."}
-        };
-
-        res.status = httplib::OK_200;
-        res.set_content(j.dump(), "application/json");
     }
 }
