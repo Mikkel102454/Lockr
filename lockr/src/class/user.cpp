@@ -61,13 +61,13 @@ namespace lockr {
     }
 
     int User::save() {
-        if(UsernameExist(m_username)) return 1;
-        if(EmailExist(m_email)) return 2;
+        if(UsernameExist(mUsername)) return 1;
+        if(EmailExist(mEmail)) return 2;
 
         auto doc = bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("username", m_username),
-                bsoncxx::builder::basic::kvp("email", m_email),
-                bsoncxx::builder::basic::kvp("password", m_password),
+                bsoncxx::builder::basic::kvp("username", mUsername),
+                bsoncxx::builder::basic::kvp("email", mEmail),
+                bsoncxx::builder::basic::kvp("password", mPassword),
                 bsoncxx::builder::basic::kvp("companies", ""),
                 bsoncxx::builder::basic::kvp("data", "")
         );
