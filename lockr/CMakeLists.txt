@@ -38,10 +38,12 @@ add_library(lockr STATIC
         src/service/user/create.cpp
         src/service/user/delete.cpp
         src/service/user/exist.cpp
+        src/service/user/login.cpp
 
         src/service/auth/access.cpp
         src/service/auth/refresh.cpp
-        src/service/user/login.cpp
+
+        src/service/data.cpp
 
         src/controller/api.cpp
         src/controller/api/user.cpp

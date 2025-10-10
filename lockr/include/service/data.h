@@ -1,0 +1,6 @@
+#ifndef LOCKR_SERVICE_DATA
+#define LOCKR_SERVICE_DATA 1
+
+
+
+#endif

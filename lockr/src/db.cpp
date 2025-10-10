@@ -130,4 +130,10 @@ namespace lockr {
         auto res = c.delete_many(std::move(filter));
         return res && res->deleted_count() > 0;
     }
+
+    bool DB::ReplaceOne(const std::string& coll,
+                       bsoncxx::document::view_or_value filter,
+                       bsoncxx::document::view_or_value data) {
+
+    }
 }

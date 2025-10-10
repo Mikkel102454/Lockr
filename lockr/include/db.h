@@ -24,6 +24,10 @@ namespace lockr {
         static bool DeleteAll(const std::string& coll,
                               bsoncxx::document::view_or_value filter);
 
+        static bool ReplaceOne(const std::string& coll,
+                       bsoncxx::document::view_or_value filter,
+                       bsoncxx::document::view_or_value data);
+
         static bool Connect();
 
 
