@@ -10,7 +10,7 @@
 
 #include <cstdint> // uint8_t
 #include <cstddef> // size_t
-#include <functional> // hash
+#include <functional> // Hash
 
 #include <nlohmann/detail/abi_macros.hpp>
 #include <nlohmann/detail/value_t.hpp>
@@ -27,15 +27,15 @@ inline std::size_t combine(std::size_t seed, std::size_t h) noexcept
 }
 
 /*!
-@brief hash a JSON value
+@brief Hash a JSON value
 
-The hash function tries to rely on std::hash where possible. Furthermore, the
-type of the JSON value is taken into account to have different hash values for
+The Hash function tries to rely on std::Hash where possible. Furthermore, the
+type of the JSON value is taken into account to have different Hash values for
 null, 0, 0U, and false, etc.
 
 @tparam BasicJsonType basic_json specialization
-@param j JSON value to hash
-@return hash value of j
+@param j JSON value to Hash
+@return Hash value of j
 */
 template<typename BasicJsonType>
 std::size_t hash(const BasicJsonType& j)

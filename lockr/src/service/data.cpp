@@ -29,6 +29,7 @@ namespace lockr {
         return true;
     }
 
+    // TODO make api key
     // TODO convert to bson and then input that into mongodb
     bool replace(const std::string& userId, nlohmann::json& json) {
         if (json.dump().size() > 1024 * 1024) return false;
@@ -43,6 +44,7 @@ namespace lockr {
         return true;
     }
 
+    // TODO make api key
     bool merge(const std::string& userId, const nlohmann::json& json) {
         if (json.dump().size() > 1024 * 1024) return false;
 

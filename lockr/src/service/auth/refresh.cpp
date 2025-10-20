@@ -2,33 +2,27 @@
 
 #include "db.h"
 #include "utils/env.h"
+#include "utils/hash.h"
+#include "utils/string.h"
 
-#include <iostream>
 #include <bsoncxx/builder/basic/document.hpp>
-#include <openssl/hmac.h>
-#include <openssl/sha.h>
 #include <openssl/rand.h>
-#include <sstream>
-#include <iomanip>
 
 namespace lockr {
-    std::string hashToken(const std::string &token);
-    std::string base64url_encode(const unsigned char* data, size_t len);
-
     bool GenerateRefreshToken(std::string &outToken, const std::string &userId) {
         unsigned char token[32];
         RAND_bytes(token, 32);
 
-        std::string refreshToken = base64url_encode(token, 32);
+        std::string refreshToken = Base64urlEncode(token, 32);
         outToken = refreshToken;
-        const std::string rtHash = hashToken(refreshToken);
+        const std::string rtHash = Hash(refreshToken, "REFRESH_TOKEN_KEY");
         return DB::Insert("token", bsoncxx::builder::basic::make_document(
                 bsoncxx::builder::basic::kvp("user_id", userId),
                 bsoncxx::builder::basic::kvp("refresh_token", rtHash)
         ), nullptr);
     }
     bool InvalidateRefreshToken(const std::string &token) {
-        const std::string rtHash = hashToken(token);
+        const std::string rtHash = Hash(token, "REFRESH_TOKEN_KEY");
         return DB::DeleteOne("token", bsoncxx::builder::basic::make_document(
                 bsoncxx::builder::basic::kvp("refresh_token", rtHash)));
     }
@@ -39,7 +33,7 @@ namespace lockr {
     }
 
     bool ValidateRefreshToken(const std::string &token){
-        const std::string rtHash = hashToken(token);
+        const std::string rtHash = Hash(token, "REFRESH_TOKEN_KEY");
 
         if(DB::Exists("token", bsoncxx::builder::basic::make_document(
                 bsoncxx::builder::basic::kvp("refresh_token", rtHash)))){
@@ -49,7 +43,7 @@ namespace lockr {
     }
 
     std::string GetIdFromRefreshToken(const std::string &token){
-        const std::string rtHash = hashToken(token);
+        const std::string rtHash = Hash(token, "REFRESH_TOKEN_KEY");
         auto doc = DB::getOne("token", bsoncxx::builder::basic::make_document(
                 bsoncxx::builder::basic::kvp("refresh_token", rtHash)
         ));
@@ -60,48 +54,5 @@ namespace lockr {
             return std::string{ e.get_string().value };
         }
         return "";
-    }
-
-// ------ HELPERS -------
-    std::string hashToken(const std::string &token) {
-        auto toHex = [](const unsigned char* data, size_t len) -> std::string {
-            std::ostringstream os;
-            os << std::hex << std::setfill('0');
-            for (size_t i = 0; i < len; ++i) os << std::setw(2) << static_cast<unsigned>(data[i]);
-            return os.str();
-        };
-
-        const std::string pepper = GetEnv("REFRESH_TOKEN_KEY");
-
-        if (!pepper.empty()) {
-            unsigned char mac[EVP_MAX_MD_SIZE];
-            unsigned int macLen = 0;
-            HMAC(EVP_sha256(),
-                 pepper.data(), static_cast<int>(pepper.size()),
-                 reinterpret_cast<const unsigned char*>(token.data()), token.size(),
-                 mac, &macLen);
-            return toHex(mac, macLen);
-        } else {
-            unsigned char digest[SHA256_DIGEST_LENGTH];
-            SHA256(reinterpret_cast<const unsigned char*>(token.data()), token.size(), digest);
-            return toHex(digest, SHA256_DIGEST_LENGTH);
-        }
-    }
-
-
-    std::string base64url_encode(const unsigned char* data, size_t len) {
-        std::string out;
-        out.resize(4 * ((len + 2) / 3));
-        int n = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(&out[0]),
-                                data, static_cast<int>(len));
-        out.resize(n);
-
-        // Make URL-safe and strip padding
-        for (char &c: out) {
-            if (c == '+') c = '-';
-            else if (c == '/') c = '_';
-        }
-        while (!out.empty() && out.back() == '=') out.pop_back();
-        return out;
     }
 }

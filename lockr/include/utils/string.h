@@ -7,6 +7,8 @@
 
 namespace lockr {
     std::vector<std::string> Split(const std::string& s, char delimiter);
+
+    std::string Base64urlEncode(const unsigned char* data, size_t len);
 }
 
 #endif

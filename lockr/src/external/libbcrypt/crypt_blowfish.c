@@ -31,7 +31,7 @@
  * "$2b$", originally by Niels Provos <provos at citi.umich.edu>, and it uses
  * some of his ideas.  The password hashing algorithm was designed by David
  * Mazieres <dm at lcs.mit.edu>.  For information on the level of
- * compatibility for bcrypt hash prefixes other than "$2b$", please refer to
+ * compatibility for bcrypt Hash prefixes other than "$2b$", please refer to
  * the comments in BF_set_key() below and to the included crypt(3) man page.
  *
  * There's a paper on the algorithm that explains its design decisions:
@@ -553,7 +553,7 @@ static void BF_set_key(const char *key, BF_key expanded, BF_key initial,
  * a backwards compatibility feature (essentially the bug) for some systems and
  * a safety measure for some others.  The latter is needed because for certain
  * multiple inputs to the buggy algorithm there exist easily found inputs to
- * the correct algorithm that produce the same hash.  Thus, we optionally
+ * the correct algorithm that produce the same Hash.  Thus, we optionally
  * deviate from the correct algorithm just enough to avoid such collisions.
  * While the bug itself affected the majority of passwords containing
  * characters with the 8th bit set (although only a percentage of those in a
@@ -617,7 +617,7 @@ static void BF_set_key(const char *key, BF_key expanded, BF_key initial,
  * At this point, "diff" is zero iff the correct and buggy algorithms produced
  * exactly the same result.  If so and if "sign" is non-zero, which indicates
  * that there was a non-benign sign extension, this means that we have a
- * collision between the correctly computed hash for this password and a set of
+ * collision between the correctly computed Hash for this password and a set of
  * passwords that could be supplied to the buggy algorithm.  Our safety measure
  * is meant to protect from such many-buggy to one-correct collisions, by
  * deviating from the correct algorithm in such cases.  Let's check for this.
@@ -805,9 +805,9 @@ int _crypt_output_magic(const char *setting, char *output, int size)
  * from incorrectly-computed hashes - merely fixing whatever broke is not
  * enough.  Thus, a proactive measure like this self-test is needed.
  *
- * 2. We don't want to leave sensitive data from our actual password hash
+ * 2. We don't want to leave sensitive data from our actual password Hash
  * computation on the stack or in registers.  Previous revisions of the code
- * would do explicit cleanups, but simply running the self-test after hash
+ * would do explicit cleanups, but simply running the self-test after Hash
  * computation is more reliable.
  *
  * The performance cost of this quick self-test is around 0.6% at the "$2a$08"
@@ -874,7 +874,7 @@ char *_crypt_blowfish_rn(const char *key, const char *setting,
 
 /* Should not happen */
 	_crypt_output_magic(setting, output, size);
-	__set_errno(EINVAL); /* pretend we don't support this hash type */
+	__set_errno(EINVAL); /* pretend we don't support this Hash type */
 	return NULL;
 }
 

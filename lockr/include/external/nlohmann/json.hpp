@@ -20,7 +20,7 @@
 
 #include <algorithm> // all_of, find, for_each
 #include <cstddef> // nullptr_t, ptrdiff_t, size_t
-#include <functional> // hash, less
+#include <functional> // Hash, less
 #include <initializer_list> // initializer_list
 #ifndef JSON_NO_IO
     #include <iosfwd> // istream, ostream
@@ -5305,7 +5305,7 @@ NLOHMANN_JSON_NAMESPACE_END
 namespace std // NOLINT(cert-dcl58-cpp)
 {
 
-/// @brief hash value for JSON objects
+/// @brief Hash value for JSON objects
 /// @sa https://json.nlohmann.me/api/basic_json/std_hash/
 NLOHMANN_BASIC_JSON_TPL_DECLARATION
 struct hash<nlohmann::NLOHMANN_BASIC_JSON_TPL> // NOLINT(cert-dcl58-cpp)

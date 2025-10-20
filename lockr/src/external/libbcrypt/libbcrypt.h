@@ -33,13 +33,13 @@ extern "C" {
 int bcrypt_gensalt(int workfactor, char salt[BCRYPT_HASHSIZE]);
 
 /*
- * This function expects a password to be hashed, a salt to hash the password
- * with and a char array to leave the result. Both the salt and the hash
+ * This function expects a password to be hashed, a salt to Hash the password
+ * with and a char array to leave the result. Both the salt and the Hash
  * parameters should have room for BCRYPT_HASHSIZE characters at least.
  *
  * It can also be used to verify a hashed password. In that case, provide the
- * expected hash in the salt parameter and verify the output hash is the same
- * as the input hash. However, to avoid timing attacks, it's better to use
+ * expected Hash in the salt parameter and verify the output Hash is the same
+ * as the input Hash. However, to avoid timing attacks, it's better to use
  * bcrypt_checkpw when verifying a password.
  *
  * The return value is zero if the password could be hashed and nonzero
@@ -49,11 +49,11 @@ int bcrypt_hashpw(const char *passwd, const char salt[BCRYPT_HASHSIZE],
 		  char hash[BCRYPT_HASHSIZE]);
 
 /*
- * This function expects a password and a hash to verify the password against.
+ * This function expects a password and a Hash to verify the password against.
  * The internal implementation is tuned to avoid timing attacks.
  *
  * The return value will be -1 in case of errors, zero if the provided password
- * matches the given hash and greater than zero if no errors are found and the
+ * matches the given Hash and greater than zero if no errors are found and the
  * passwords don't match.
  *
  */
@@ -66,12 +66,12 @@ int bcrypt_checkpw(const char *passwd, const char hash[BCRYPT_HASHSIZE]);
  * Hashing a password:
  *
  *	char salt[BCRYPT_HASHSIZE];
- *	char hash[BCRYPT_HASHSIZE];
+ *	char Hash[BCRYPT_HASHSIZE];
  *	int ret;
  *
  *	ret = bcrypt_gensalt(12, salt);
  *	assert(ret == 0);
- *	ret = bcrypt_hashpw("thepassword", salt, hash);
+ *	ret = bcrypt_hashpw("thepassword", salt, Hash);
  *	assert(ret == 0);
  *
  *

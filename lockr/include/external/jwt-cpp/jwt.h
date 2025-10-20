@@ -1374,7 +1374,7 @@ namespace jwt {
 			 * Construct new hmac algorithm
 			 *
 			 * \param key Key to use for HMAC
-			 * \param md Pointer to hash function
+			 * \param md Pointer to Hash function
 			 * \param name Name of the algorithm
 			 */
 			hmacsha(std::string key, const EVP_MD* (*md)(), std::string name)
@@ -1431,7 +1431,7 @@ namespace jwt {
 		private:
 			/// HMAC secret
 			const std::string secret;
-			/// HMAC hash generator
+			/// HMAC Hash generator
 			const EVP_MD* (*md)();
 			/// algorithm's name
 			const std::string alg_name;
@@ -1447,7 +1447,7 @@ namespace jwt {
 			 * \param private_key RSA private key or empty string if not available. If empty, signing will always fail.
 			 * \param public_key_password Password to decrypt public key pem.
 			 * \param private_key_password Password to decrypt private key pem.
-			 * \param md Pointer to hash function
+			 * \param md Pointer to Hash function
 			 * \param name Name of the algorithm
 			 */
 			rsa(const std::string& public_key, const std::string& private_key, const std::string& public_key_password,
@@ -1547,7 +1547,7 @@ namespace jwt {
 			 * \param private_key ECDSA private key or empty string if not available. If empty, signing will always fail
 			 * \param public_key_password Password to decrypt public key pem
 			 * \param private_key_password Password to decrypt private key pem
-			 * \param md Pointer to hash function
+			 * \param md Pointer to Hash function
 			 * \param name Name of the algorithm
 			 * \param siglen The bit length of the signature
 			 */
@@ -1903,7 +1903,7 @@ namespace jwt {
 			 * \param private_key RSA private key or empty string if not available. If empty, signing will always fail.
 			 * \param public_key_password Password to decrypt public key pem.
 			 * \param private_key_password Password to decrypt private key pem.
-			 * \param md Pointer to hash function
+			 * \param md Pointer to Hash function
 			 * \param name Name of the algorithm
 			 */
 			pss(const std::string& public_key, const std::string& private_key, const std::string& public_key_password,
@@ -1940,7 +1940,7 @@ namespace jwt {
 					return {};
 				}
 // wolfSSL does not require EVP_PKEY_CTX_set_rsa_pss_saltlen. The default behavior
-// sets the salt length to the hash length. Unlike OpenSSL which exposes this functionality.
+// sets the salt length to the Hash length. Unlike OpenSSL which exposes this functionality.
 #ifndef LIBWOLFSSL_VERSION_HEX
 				if (EVP_PKEY_CTX_set_rsa_pss_saltlen(ctx, -1) <= 0) {
 					ec = error::signature_generation_error::set_rsa_pss_saltlen_failed;
@@ -1989,7 +1989,7 @@ namespace jwt {
 					return;
 				}
 // wolfSSL does not require EVP_PKEY_CTX_set_rsa_pss_saltlen. The default behavior
-// sets the salt length to the hash length. Unlike OpenSSL which exposes this functionality.
+// sets the salt length to the Hash length. Unlike OpenSSL which exposes this functionality.
 #ifndef LIBWOLFSSL_VERSION_HEX
 				if (EVP_PKEY_CTX_set_rsa_pss_saltlen(ctx, -1) <= 0) {
 					ec = error::signature_verification_error::set_rsa_pss_saltlen_failed;
