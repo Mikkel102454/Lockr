@@ -8,6 +8,9 @@ add_library(bcrypt_ow STATIC
         src/external/libbcrypt/crypt_blowfish.c
         src/external/libbcrypt/crypt_gensalt.c
         src/external/libbcrypt/ow-crypt.c
+        src/service/company/api/create.cpp
+        src/service/company/api/verify.cpp
+        src/service/company/api/delete.cpp
 )
 set_target_properties(bcrypt_ow PROPERTIES POSITION_INDEPENDENT_CODE ON)
 

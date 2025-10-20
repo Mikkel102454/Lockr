@@ -6,6 +6,7 @@
 #include <string>
 
 namespace lockr {
+    // TODO make api key
     bool removeAll(const std::string& userId);
     bool get(const std::string& userId, nlohmann::json& outJson);
     bool replace(const std::string& userId, const nlohmann::json& json);
@@ -28,11 +29,23 @@ namespace lockr {
         return true;
     }
 
+    // TODO convert to bson and then input that into mongodb
     bool replace(const std::string& userId, nlohmann::json& json) {
+        if (json.dump().size() > 1024 * 1024) return false;
+
+        DB::ReplaceOne("data", bsoncxx::builder::basic::make_document(
+            bsoncxx::builder::basic::kvp("user_id", userId)
+            ),
+        bsoncxx::builder::basic::make_document(
+            bsoncxx::builder::basic::kvp("data", json.dump())
+            ));
+
         return true;
     }
 
     bool merge(const std::string& userId, const nlohmann::json& json) {
+        if (json.dump().size() > 1024 * 1024) return false;
+
         nlohmann::json currentJson;
         get(userId, currentJson);
         currentJson.merge_patch(json);

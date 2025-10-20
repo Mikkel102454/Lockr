@@ -23,26 +23,26 @@ namespace lockr {
         outToken = refreshToken;
         const std::string rtHash = hashToken(refreshToken);
         return DB::Insert("token", bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("userId", userId),
-                bsoncxx::builder::basic::kvp("refreshToken", rtHash)
+                bsoncxx::builder::basic::kvp("user_id", userId),
+                bsoncxx::builder::basic::kvp("refresh_token", rtHash)
         ), nullptr);
     }
     bool InvalidateRefreshToken(const std::string &token) {
         const std::string rtHash = hashToken(token);
         return DB::DeleteOne("token", bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("refreshToken", rtHash)));
+                bsoncxx::builder::basic::kvp("refresh_token", rtHash)));
     }
 
     bool InvalidateUserRefreshToken(const std::string &userId) {
         return DB::DeleteAll("token", bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("userId", userId)));
+                bsoncxx::builder::basic::kvp("user_id", userId)));
     }
 
     bool ValidateRefreshToken(const std::string &token){
         const std::string rtHash = hashToken(token);
 
         if(DB::Exists("token", bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("refreshToken", rtHash)))){
+                bsoncxx::builder::basic::kvp("refresh_token", rtHash)))){
             return true;
         }
         return false;
@@ -51,11 +51,11 @@ namespace lockr {
     std::string GetIdFromRefreshToken(const std::string &token){
         const std::string rtHash = hashToken(token);
         auto doc = DB::getOne("token", bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("refreshToken", rtHash)
+                bsoncxx::builder::basic::kvp("refresh_token", rtHash)
         ));
         if(!doc) return "";
         auto v = doc->view();
-        auto e = v["userId"];
+        auto e = v["user_id"];
         if (e && e.type() == bsoncxx::type::k_string) {
             return std::string{ e.get_string().value };
         }

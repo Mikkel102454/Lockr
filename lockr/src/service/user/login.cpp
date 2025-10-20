@@ -9,7 +9,6 @@ namespace lockr {
             return false;
         }
 
-
         GenerateRefreshToken(outToken, User::GetUserId(email));
         return true;
     }
