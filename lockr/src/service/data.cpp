@@ -16,12 +16,20 @@ namespace lockr {
                   ));
     }
 
-    bool GetData(const std::string& userId, nlohmann::json& outJson, const std::string& companyId) {
+    //TODO
+    bool GetData(const std::string& userId, nlohmann::json& outJson, const std::string& companyId, const std::string fields[]) {
+        return true;
+    }
+
+    bool GetAllData(const std::string& userId, nlohmann::json& outJson, const std::string& companyId) {
         auto doc = DB::getOne("data", bsoncxx::builder::basic::make_document(
                   bsoncxx::builder::basic::kvp("user_id", userId),
                   bsoncxx::builder::basic::kvp("company_id", companyId)
                   ));
-        if (!doc) return false;
+        if (!doc) {
+            outJson = nullptr;
+            return false;
+        }
 
         const auto dataView = doc->view()["data"].get_document().view();
         outJson = nlohmann::json::parse(bsoncxx::to_json(dataView));
@@ -32,6 +40,15 @@ namespace lockr {
         const bsoncxx::document::value jsonDoc = bsoncxx::from_json(json.dump());
         if (jsonDoc.view().length() > maxData) return false;
 
+        if (!DB::Exists("data", bsoncxx::builder::basic::make_document(
+            bsoncxx::builder::basic::kvp("user_id", userId),
+            bsoncxx::builder::basic::kvp("company_id", companyId)
+            ))) {
+            DB::Insert("data", bsoncxx::builder::basic::make_document(
+            bsoncxx::builder::basic::kvp("user_id", userId),
+            bsoncxx::builder::basic::kvp("company_id", companyId)
+            ));
+        }
         DB::UpdateOne("data", bsoncxx::builder::basic::make_document(
             bsoncxx::builder::basic::kvp("user_id", userId),
             bsoncxx::builder::basic::kvp("company_id", companyId)
@@ -44,10 +61,13 @@ namespace lockr {
     }
 
     bool MergeData(const std::string& userId, const nlohmann::json& json, const std::string& companyId) {
-            nlohmann::json currentJson;
-            GetData(userId, currentJson, companyId);
-            currentJson.merge_patch(json);
+        nlohmann::json currentJson;
+        GetAllData(userId, currentJson, companyId);
+        if (currentJson == nullptr) {
+            return ReplaceData(userId, json, companyId);
+        }
+        currentJson.merge_patch(json);
 
-            return ReplaceData(userId, currentJson, companyId);
+        return ReplaceData(userId, currentJson, companyId);
     }
 }

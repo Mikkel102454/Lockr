@@ -7,8 +7,8 @@
 
 namespace lockr {
     void PostCreateUser(const httplib::Request& req, httplib::Response& res);
-    void GetUsernameValid(const httplib::Request& req, httplib::Response& res);
-    void GetEmailValid(const httplib::Request& req, httplib::Response& res);
+    void PostUsernameValid(const httplib::Request& req, httplib::Response& res);
+    void PostEmailValid(const httplib::Request& req, httplib::Response& res);
 
     void PostLogin(const httplib::Request& req, httplib::Response& res);
 }

@@ -5,16 +5,19 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include <openssl/rand.h>
 
+#include "utils/string.h"
+
 namespace lockr {
-    std::string CreateCompanyKey(std::string& outKey, const std::string& userId,
+    void CreateCompanyKey(std::string& outToken, const std::string& userId,
                                     const std::string& name) {
-        unsigned char token[32];
-        RAND_bytes(token, 32);
+        unsigned char tokenChar[32];
+        RAND_bytes(tokenChar, 32);
 
-        outKey = reinterpret_cast<char*>(token);
-        std::string keyHashed = Hash(reinterpret_cast<char*>(token));
+        const std::string token = Base64urlEncode(tokenChar, 32);
+        outToken = token;
+        std::string keyHashed = Hash(token);
 
-        return DB::Insert("company_key", bsoncxx::builder::basic::make_document(
+        DB::Insert("company_key", bsoncxx::builder::basic::make_document(
                 bsoncxx::builder::basic::kvp("user_id", userId),
                 bsoncxx::builder::basic::kvp("name", name),
                 bsoncxx::builder::basic::kvp("key", keyHashed)

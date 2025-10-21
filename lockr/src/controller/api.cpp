@@ -10,8 +10,8 @@ namespace lockr {
         // ----------------------
         svr.Post("/api/users/create", PostCreateUser);
         svr.Post("/api/users/login", PostLogin);
-        svr.Get("/api/users/username", GetUsernameValid);
-        svr.Get("/api/users/email", GetEmailValid);
+        svr.Post("/api/users/username", PostUsernameValid);
+        svr.Post("/api/users/email", PostEmailValid);
 
         // ----------------------
         //         TOKEN

@@ -5,8 +5,18 @@
 
 namespace lockr {
     void PostRefreshToken(const httplib::Request& req, httplib::Response& res) {
+        nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
+        if (body.is_discarded()) {
+            nlohmann::json j = {
+                {"success", false},
+                {"message", "Invalid JSON."}
+            };
+            res.set_content(j.dump(), "application/json");
+            res.status = httplib::BadRequest_400;
+            return;
+        }
 
-        if(!ValidateRefreshToken(req.get_param_value("refreshToken"))) {
+        if(!ValidateRefreshToken(body["refreshToken"])) {
             nlohmann::json j = {
                     {"success", false},
                     {"message", "Refresh token is invalid."}
@@ -17,10 +27,10 @@ namespace lockr {
         }
 
         std::string accessToken;
-        std::string userId = GetIdFromRefreshToken(req.get_param_value("refreshToken"));
+        std::string userId = GetIdFromRefreshToken(body["refreshToken"]);
 
         CreateNewAccessToken(accessToken, userId);
-        InvalidateRefreshToken(req.get_param_value("refreshToken"));
+        InvalidateRefreshToken(body["refreshToken"]);
         if(userId.empty()) {
             nlohmann::json j = {
                     {"success", false},
@@ -45,7 +55,18 @@ namespace lockr {
     }
 
     void PostValidateRefreshToken(const httplib::Request& req, httplib::Response& res) {
-        if (!ValidateRefreshToken(req.get_param_value("refreshToken"))) {
+        nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
+        if (body.is_discarded()) {
+            nlohmann::json j = {
+                {"success", false},
+                {"message", "Invalid JSON."}
+            };
+            res.set_content(j.dump(), "application/json");
+            res.status = httplib::BadRequest_400;
+            return;
+        }
+
+        if (!ValidateRefreshToken(body["refreshToken"])) {
             nlohmann::json j = {
                     {"success", false},
                     {"message", "Refresh token is invalid."}
@@ -66,7 +87,18 @@ namespace lockr {
 
     void PostValidateAccessToken(const httplib::Request& req, httplib::Response& res) {
         try{
-            if (!ValidateAccessToken(req.get_param_value("accessToken"))) {
+            nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
+            if (body.is_discarded()) {
+                nlohmann::json j = {
+                    {"success", false},
+                    {"message", "Invalid JSON."}
+                };
+                res.set_content(j.dump(), "application/json");
+                res.status = httplib::BadRequest_400;
+                return;
+            }
+
+            if (!ValidateAccessToken(body["accessToken"])) {
                 nlohmann::json j = {
                         {"success", false},
                         {"message", "Access token is invalid."}

@@ -7,7 +7,7 @@
 
 namespace lockr {
     void PostCreateUser(const httplib::Request& req, httplib::Response& res) {
-        nlohmann::json body = nlohmann::json::parse(req.body, /*callback*/nullptr, /*allow_exceptions*/false);
+        nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
         if (body.is_discarded()) {
             nlohmann::json j = {
                     {"success", false},
@@ -28,8 +28,19 @@ namespace lockr {
         res.set_content(msg.dump(), "application/json");
     }
 
-    void GetUsernameValid(const httplib::Request& req, httplib::Response& res) {
-        if (!req.has_param("username")) {
+    void PostUsernameValid(const httplib::Request& req, httplib::Response& res) {
+        nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
+        if (body.is_discarded()) {
+            nlohmann::json j = {
+                {"success", false},
+                {"message", "Invalid JSON."}
+            };
+            res.set_content(j.dump(), "application/json");
+            res.status = httplib::BadRequest_400;
+            return;
+        }
+
+        if (!body.contains("username")) {
             nlohmann::json j = {
                     {"success", false},
                     {"message", "Username required."}
@@ -40,12 +51,23 @@ namespace lockr {
         }
         nlohmann::json msg;
 
-        res.status = CheckUsername(req.get_param_value("username"), msg);
+        res.status = CheckUsername(body["username"], msg);
         res.set_content(msg.dump(), "application/json");
     }
 
-    void GetEmailValid(const httplib::Request& req, httplib::Response& res) {
-        if (!req.has_param("email")) {
+    void PostEmailValid(const httplib::Request& req, httplib::Response& res) {
+        nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
+        if (body.is_discarded()) {
+            nlohmann::json j = {
+                {"success", false},
+                {"message", "Invalid JSON."}
+            };
+            res.set_content(j.dump(), "application/json");
+            res.status = httplib::BadRequest_400;
+            return;
+        }
+
+        if (!body.contains("email")) {
             nlohmann::json j = {
                     {"success", false},
                     {"message", "Email required."}
@@ -56,13 +78,24 @@ namespace lockr {
         }
         nlohmann::json msg;
 
-        res.status = CheckEmail(req.get_param_value("email"), msg);
+        res.status = CheckEmail(body["email"], msg);
         res.set_content(msg.dump(), "application/json");
     }
 
     void PostLogin(const httplib::Request& req, httplib::Response& res) {
         try {
-            if (!req.has_param("email")) {
+            nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
+            if (body.is_discarded()) {
+                nlohmann::json j = {
+                    {"success", false},
+                    {"message", "Invalid JSON."}
+                };
+                res.set_content(j.dump(), "application/json");
+                res.status = httplib::BadRequest_400;
+                return;
+            }
+
+            if (!body.contains("email")) {
                 nlohmann::json j = {
                         {"success", false},
                         {"message", "Email required."}
@@ -71,7 +104,7 @@ namespace lockr {
                 res.status = httplib::BadRequest_400;
                 return;
             }
-            if (!req.has_param("password")) {
+            if (!body.contains("password")) {
                 nlohmann::json j = {
                         {"success", false},
                         {"message", "Password required."}
@@ -83,7 +116,7 @@ namespace lockr {
 
             std::string refreshToken;
 
-            if (!Login(req.get_param_value("email"), req.get_param_value("password"), refreshToken)) {
+            if (!Login(body["email"], body["password"], refreshToken)) {
                 nlohmann::json j = {
                         {"success", false},
                         {"message", "Email or password is incorrect."}

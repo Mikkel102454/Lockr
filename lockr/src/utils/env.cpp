@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <cstdlib>
+#include <iostream>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -59,7 +60,10 @@ namespace lockr {
     #ifdef _WIN32
         size_t len = 0;
         getenv_s(&len, nullptr, 0, key.c_str());
-        if (len == 0) exit(ENV_VARIABLE_NOT_FOUND);
+        if (len == 0) {
+            std::cout << "Could not find env variable: " << key << std::endl;
+            exit(ENV_VARIABLE_NOT_FOUND);
+        }
 
         std::string value(len, '\0');
         getenv_s(&len, &value[0], len, key.c_str());

@@ -1,5 +1,7 @@
 #include "controller/api/company.h"
 
+#include <bsoncxx/builder/basic/array.hpp>
+
 #include "service/data.h"
 #include "service/company/api/verify.h"
 #include "service/auth/access.h"
@@ -9,34 +11,49 @@
 
 namespace lockr {
     void PutUserData(const httplib::Request& req, httplib::Response& res) {
-        std::string companyName;
-        if (!ValidateCompanyKey(req.get_param_value("token"), companyName)) {
-            nlohmann::json j = {
-                {"message", "Invalid company token."}
-            };
-            res.set_content(j.dump(), "application/json");
-            res.status = httplib::Unauthorized_401;
-            return;
-        }
+        try {
+            nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
+            if (body.is_discarded()) {
+                nlohmann::json j = {
+                    {"success", false},
+                    {"message", "Invalid JSON."}
+                };
+                res.set_content(j.dump(), "application/json");
+                res.status = httplib::BadRequest_400;
+                return;
+            }
 
-        bool success = false;
-        if (req.get_param_value("replace").data()) {
-            success = ReplaceData(req.get_param_value("userId"),
-                req.get_param_value("data"), companyName);
-        }else {
-            success = MergeData(req.get_param_value("userId"),
-                req.get_param_value("data"), companyName);
-        }
-        if (!success) {
-            nlohmann::json j = {
-                {"message", "User data limit has been reached."}
-            };
-            res.set_content(j.dump(), "application/json");
-            res.status = httplib::InsufficientStorage_507;
-            return;
-        }
+            std::string companyName;
+            if (!ValidateCompanyKey(body["token"], companyName)) {
+                nlohmann::json j = {
+                    {"message", "Invalid company token."}
+                };
+                res.set_content(j.dump(), "application/json");
+                res.status = httplib::Unauthorized_401;
+                return;
+            }
 
-        res.status = httplib::Created_201;
+            bool success = false;
+            if (body.value("replace", false)) {
+                success = ReplaceData(body["userId"],
+                    body["data"], companyName);
+            }else {
+                success = MergeData(body["userId"],
+                    body["data"], companyName);
+            }
+            if (!success) {
+                nlohmann::json j = {
+                    {"message", "User data limit has been reached."}
+                };
+                res.set_content(j.dump(), "application/json");
+                res.status = httplib::InsufficientStorage_507;
+                return;
+            }
+
+            res.status = httplib::Created_201;
+        } catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
     }
 
     void PostCreateKey(const httplib::Request& req, httplib::Response& res) {
@@ -51,10 +68,21 @@ namespace lockr {
         }
 
         std::string outKey;
-        std::string out = CreateCompanyKey(outKey, userId, req.get_param_value("newName"));
-        if (out.length() == 0) {
-            // 500
+        CreateCompanyKey(outKey, userId, req.get_param_value("newName"));
+        if (outKey.length() == 0) {
+            nlohmann::json j = {
+                {"message", "Internal server error"}
+            };
+            res.set_content(j.dump(), "application/json");
+            res.status = httplib::InternalServerError_500;
+            return;
         }
+        std::cout << outKey << std::endl;
+        nlohmann::json j = {
+            {"token", outKey}
+        };
+        res.set_content(j.dump(), "application/json");
+        res.status = httplib::Created_201;
     }
     void PostDeleteKey(const httplib::Request& req, httplib::Response& res) {
 
