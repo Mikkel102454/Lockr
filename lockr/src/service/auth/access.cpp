@@ -8,8 +8,9 @@
 namespace lockr {
     bool ValidateAccessToken(const std::string &token) {
         try{
+            std::string key = GetEnv("ACCESS_TOKEN_KEY");
             auto verifier = jwt::verify()
-                    .allow_algorithm(jwt::algorithm::hs256(GetEnv("ACCESS_TOKEN_KEY")))
+                    .allow_algorithm(jwt::algorithm::hs256(key))
                     .with_issuer("Lockr_Auth");
 
             verifier.verify(jwt::decode(token));
@@ -21,8 +22,9 @@ namespace lockr {
     }
     bool ValidateAccessToken(const std::string &token, std::string& outUserId) {
         try{
+            std::string key = GetEnv("ACCESS_TOKEN_KEY");
             auto verifier = jwt::verify()
-                    .allow_algorithm(jwt::algorithm::hs256(GetEnv("ACCESS_TOKEN_KEY")))
+                    .allow_algorithm(jwt::algorithm::hs256(key))
                     .with_issuer("Lockr_Auth");
 
             auto decodedJwt = jwt::decode(token);
@@ -46,7 +48,7 @@ namespace lockr {
                 .set_subject(userId)
                 .set_issued_now()
                 .set_expires_at(std::chrono::system_clock::now() + std::chrono::seconds(600))
-                .sign(jwt::algorithm::hs256(jwt::algorithm::hs256(GetEnv("ACCESS_TOKEN_KEY"))));
+                .sign(jwt::algorithm::hs256(jwt::algorithm::hs256(key)));
         return httplib::OK_200;
     }
 }

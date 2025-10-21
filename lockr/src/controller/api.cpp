@@ -25,6 +25,7 @@ namespace lockr {
         //        Company
         // ----------------------
         svr.Put("/api/company/data", PutUserData);
+        svr.Get("/api/company/data", GetUserData);
 
         svr.Post("/api/company/key/create", PostCreateKey);
     }
