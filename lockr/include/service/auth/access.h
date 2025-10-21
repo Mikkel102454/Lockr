@@ -5,6 +5,8 @@
 
 namespace lockr {
     bool ValidateAccessToken(const std::string &token);
+    bool ValidateAccessToken(const std::string &token, std::string& outUserId);
+
     int CreateNewAccessToken(std::string &outToken, const std::string &userId);
 }
 

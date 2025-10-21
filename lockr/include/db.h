@@ -12,6 +12,9 @@ namespace lockr {
                           bsoncxx::document::view_or_value document,
                           std::string* out_err);
 
+        static std::string Insert(const std::string& coll,
+               bsoncxx::document::view_or_value document);
+
         static std::optional<bsoncxx::document::value> getOne(const std::string& coll,
                                                          bsoncxx::document::view_or_value filter);
 
@@ -24,7 +27,7 @@ namespace lockr {
         static bool DeleteAll(const std::string& coll,
                               bsoncxx::document::view_or_value filter);
 
-        static bool ReplaceOne(const std::string& coll,
+        static bool UpdateOne(const std::string& coll,
                        bsoncxx::document::view_or_value filter,
                        bsoncxx::document::view_or_value data);
 

@@ -4,7 +4,7 @@
 #include <string>
 
 namespace lockr {
-    bool VerifyCompanyKey(std::string& key);
+    bool ValidateCompanyKey(const std::string& key, std::string& outName);
 }
 
 #endif

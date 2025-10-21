@@ -4,7 +4,8 @@
 #include <string>
 
 namespace lockr {
-    std::string CreateCompanyKey(std::string& userId, std::string& name);
+    std::string CreateCompanyKey(std::string& outKey, const std::string& userId,
+                                    const std::string& name);
 }
 
 #endif

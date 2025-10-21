@@ -80,6 +80,25 @@ namespace lockr {
         }
     }
 
+     std::string DB::Insert(const std::string& coll,
+               bsoncxx::document::view_or_value document) {
+        try {
+            auto c = mDatabase[coll];
+
+            auto res = c.insert_one(std::move(document));
+
+            if (!res) return "-1";
+
+            return res->inserted_id().get_oid().value.to_string();
+        }
+        catch (const mongocxx::exception& e) {
+            return "-2";
+        }
+        catch (const std::exception& e) {
+            return "-3";
+        }
+    }
+
 
     void DB::EnsureTables() {
 
@@ -131,9 +150,22 @@ namespace lockr {
         return res && res->deleted_count() > 0;
     }
 
-    bool DB::ReplaceOne(const std::string& coll,
+    bool DB::UpdateOne(const std::string& coll,
                        bsoncxx::document::view_or_value filter,
                        bsoncxx::document::view_or_value data) {
+        if (data.view().empty()) return false;
 
+        auto collection = mDatabase[coll];
+
+        auto update_doc = bsoncxx::builder::basic::make_document(
+            bsoncxx::builder::basic::kvp("$set", data.view()));
+
+        mongocxx::options::update opts;
+        opts.upsert(false);
+
+        auto res = collection.update_one(filter.view(), update_doc.view(), opts);
+        if (!res) return false;
+
+        return res->matched_count() > 0;
     }
 }

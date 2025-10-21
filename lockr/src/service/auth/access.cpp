@@ -19,6 +19,23 @@ namespace lockr {
             return false;
         }
     }
+    bool ValidateAccessToken(const std::string &token, std::string& outUserId) {
+        try{
+            auto verifier = jwt::verify()
+                    .allow_algorithm(jwt::algorithm::hs256(GetEnv("ACCESS_TOKEN_KEY")))
+                    .with_issuer("Lockr_Auth");
+
+            auto decodedJwt = jwt::decode(token);
+            verifier.verify(decodedJwt);
+
+            outUserId = decodedJwt.get_subject();
+
+            return true;
+        } catch (const std::exception& e) {
+            std::cout << e.what() << "\n";
+            return false;
+        }
+    }
 
     int CreateNewAccessToken(std::string &outToken, const std::string &userId) {
 

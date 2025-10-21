@@ -6,21 +6,19 @@
 #include <string>
 
 namespace lockr {
-    // TODO make api key
-    bool removeAll(const std::string& userId);
-    bool get(const std::string& userId, nlohmann::json& outJson);
-    bool replace(const std::string& userId, const nlohmann::json& json);
-    bool merge(const std::string& userId, const nlohmann::json& json);
+    static int maxData = 1024*1024; // 1MB
 
-    bool removeAll(const std::string& userId) {
+    bool RemoveAllData(const std::string& userId, const std::string& companyId) {
         return DB::DeleteOne("data", bsoncxx::builder::basic::make_document(
-                  bsoncxx::builder::basic::kvp("userId", userId)
+                  bsoncxx::builder::basic::kvp("user_id", userId),
+                  bsoncxx::builder::basic::kvp("company_id", companyId)
                   ));
     }
 
-    bool get(const std::string& userId, nlohmann::json& outJson) {
+    bool GetData(const std::string& userId, nlohmann::json& outJson, const std::string& companyId) {
         auto doc = DB::getOne("data", bsoncxx::builder::basic::make_document(
-                  bsoncxx::builder::basic::kvp("userId", userId)
+                  bsoncxx::builder::basic::kvp("user_id", userId),
+                  bsoncxx::builder::basic::kvp("company_id", companyId)
                   ));
         if (!doc) return false;
 
@@ -29,30 +27,30 @@ namespace lockr {
         return true;
     }
 
-    // TODO make api key
-    // TODO convert to bson and then input that into mongodb
-    bool replace(const std::string& userId, nlohmann::json& json) {
-        if (json.dump().size() > 1024 * 1024) return false;
+    bool ReplaceData(const std::string& userId, const nlohmann::json& json, const std::string& companyId) {
+        const auto bson = nlohmann::json::to_bson(json);
+        if (bson.size() > maxData) return false;
 
-        DB::ReplaceOne("data", bsoncxx::builder::basic::make_document(
-            bsoncxx::builder::basic::kvp("user_id", userId)
+        DB::UpdateOne("data", bsoncxx::builder::basic::make_document(
+            bsoncxx::builder::basic::kvp("user_id", userId),
+            bsoncxx::builder::basic::kvp("company_id", companyId)
             ),
-        bsoncxx::builder::basic::make_document(
-            bsoncxx::builder::basic::kvp("data", json.dump())
+            bsoncxx::builder::basic::make_document(
+                bsoncxx::builder::basic::kvp("data",  bsoncxx::types::b_binary{
+                bsoncxx::binary_sub_type::k_binary,
+                static_cast<uint32_t>(bson.size()),
+                bson.data()
+                })
             ));
 
         return true;
     }
 
-    // TODO make api key
-    bool merge(const std::string& userId, const nlohmann::json& json) {
-        if (json.dump().size() > 1024 * 1024) return false;
+    bool MergeData(const std::string& userId, const nlohmann::json& json, const std::string& companyId) {
+            nlohmann::json currentJson;
+            GetData(userId, currentJson, companyId);
+            currentJson.merge_patch(json);
 
-        nlohmann::json currentJson;
-        get(userId, currentJson);
-        currentJson.merge_patch(json);
-
-        replace(userId, currentJson);
-        return true;
+            return ReplaceData(userId, currentJson, companyId);
     }
 }

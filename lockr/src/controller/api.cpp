@@ -1,5 +1,7 @@
+#include "controller/api/company.h"
 #include "controller/api/user.h"
 #include "controller/api/token.h"
+#include "service/company/api/create.h"
 
 namespace lockr {
     void InitEndpoint(httplib::Server &svr) {
@@ -19,5 +21,11 @@ namespace lockr {
         svr.Post("/api/temp/token/refresh", PostValidateRefreshToken);
         svr.Post("/api/temp/token/access", PostValidateAccessToken);
 
+        // ----------------------
+        //        Company
+        // ----------------------
+        svr.Put("/api/company/data", PutUserData);
+
+        svr.Post("/api/company/key/create", PostCreateKey);
     }
 }

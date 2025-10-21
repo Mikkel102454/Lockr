@@ -53,6 +53,7 @@ add_library(lockr STATIC
         src/controller/api.cpp
         src/controller/api/user.cpp
         src/controller/api/token.cpp
+        src/controller/api/company.cpp
 
 
 )
