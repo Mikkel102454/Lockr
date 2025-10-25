@@ -1,6 +1,8 @@
 #include "controller/api/token.h"
 #include "service/auth/access.h"
 #include "service/auth/refresh.h"
+#include "service/company/api/verify.h"
+
 #include "nlohmann/json.hpp"
 
 namespace lockr {
@@ -16,7 +18,18 @@ namespace lockr {
             return;
         }
 
-        if(!ValidateRefreshToken(body["refreshToken"])) {
+        std::string companyId;
+        if(!ValidateCompanyKey(body["companyToken"], companyId)){
+            nlohmann::json j = {
+                    {"success", false},
+                    {"message", "Invalid company token."}
+            };
+            res.set_content(j.dump(), "application/json");
+            res.status = httplib::Unauthorized_401;
+            return;
+        }
+
+        if(!ValidateRefreshToken(body["refreshToken"], companyId)) {
             nlohmann::json j = {
                     {"success", false},
                     {"message", "Refresh token is invalid."}
@@ -27,10 +40,10 @@ namespace lockr {
         }
 
         std::string accessToken;
-        std::string userId = GetIdFromRefreshToken(body["refreshToken"]);
+        std::string userId = GetIdFromRefreshToken(body["refreshToken"], companyId);
 
-        CreateNewAccessToken(accessToken, userId);
-        InvalidateRefreshToken(body["refreshToken"]);
+        CreateNewAccessToken(accessToken, companyId, userId);
+        InvalidateRefreshToken(body["refreshToken"], companyId);
         if(userId.empty()) {
             nlohmann::json j = {
                     {"success", false},
@@ -42,7 +55,7 @@ namespace lockr {
         }
 
         std::string refreshToken;
-        GenerateRefreshToken(refreshToken, userId);
+        GenerateRefreshToken(refreshToken, userId, companyId);
 
         nlohmann::json j = {
                 {"success", true},
@@ -66,7 +79,18 @@ namespace lockr {
             return;
         }
 
-        if (!ValidateRefreshToken(body["refreshToken"])) {
+        std::string companyId;
+        if(!ValidateCompanyKey(body["companyToken"], companyId)){
+            nlohmann::json j = {
+                    {"success", false},
+                    {"message", "Invalid company token."}
+            };
+            res.set_content(j.dump(), "application/json");
+            res.status = httplib::Unauthorized_401;
+            return;
+        }
+
+        if (!ValidateRefreshToken(body["refreshToken"], companyId)) {
             nlohmann::json j = {
                     {"success", false},
                     {"message", "Refresh token is invalid."}
@@ -98,7 +122,18 @@ namespace lockr {
                 return;
             }
 
-            if (!ValidateAccessToken(body["accessToken"])) {
+            std::string companyId;
+            if(!ValidateCompanyKey(body["companyToken"], companyId)){
+                nlohmann::json j = {
+                        {"success", false},
+                        {"message", "Invalid company token."}
+                };
+                res.set_content(j.dump(), "application/json");
+                res.status = httplib::Unauthorized_401;
+                return;
+            }
+
+            if (!ValidateAccessToken(body["accessToken"], companyId)) {
                 nlohmann::json j = {
                         {"success", false},
                         {"message", "Access token is invalid."}

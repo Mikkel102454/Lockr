@@ -17,6 +17,9 @@ namespace lockr {
 
         static std::optional<bsoncxx::document::value> getOne(const std::string& coll,
                                                          bsoncxx::document::view_or_value filter);
+        static std::optional<bsoncxx::document::value> getOne(const std::string& coll,
+                                                           bsoncxx::document::view_or_value filter,
+                                                           bsoncxx::builder::basic::document& proj);
 
         static bool Exists(const std::string& coll,
                            bsoncxx::document::view_or_value filter);

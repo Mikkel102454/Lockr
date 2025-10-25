@@ -22,16 +22,7 @@ namespace lockr {
     }
 
     void InitDotEnv() {
-        std::filesystem::path exeDir;
-    #ifdef _WIN32
-        char exePath[MAX_PATH];
-        GetModuleFileNameA(nullptr, exePath, MAX_PATH);
-        exeDir = std::filesystem::path(exePath).parent_path();
-    #else
-        exeDir = filesystem::current_path();
-    #endif
-
-        std::ifstream f(exeDir / ".env");
+        std::ifstream f(ENV_PATH ".env");
         if (!f) return;
 
         std::string line;
@@ -45,16 +36,16 @@ namespace lockr {
             std::string key = trim(line.substr(0, pos));
             std::string val = trim(line.substr(pos + 1));
 
-    #ifdef _WIN32
+#ifdef _WIN32
             _putenv_s(key.c_str(), val.c_str());
-    #else
-            // putenv requires storage to persist for the program lifetime
-        static vector<string> storage;
+#else
+            static std::vector<std::string> storage;
         storage.push_back(key + "=" + val);
         putenv(storage.back().data());
-    #endif
+#endif
         }
     }
+
 
     std::string GetEnv(const std::string& key) {
     #ifdef _WIN32

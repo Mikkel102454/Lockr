@@ -4,11 +4,11 @@
 #include <string>
 
 namespace lockr {
-    bool GenerateRefreshToken(std::string &outToken, const std::string &userId);
-    bool InvalidateRefreshToken(const std::string &token);
+    bool GenerateRefreshToken(std::string &outToken, const std::string &userId, const std::string &companyId);
+    bool InvalidateRefreshToken(const std::string &token, const std::string &companyId);
     bool InvalidateUserRefreshToken(const std::string &userUuid);
-    bool ValidateRefreshToken(const std::string &token);
-    std::string GetIdFromRefreshToken(const std::string &token);
+    bool ValidateRefreshToken(const std::string &token, const std::string &companyId);
+    std::string GetIdFromRefreshToken(const std::string &token, const std::string &companyId);
 }
 
 #endif

@@ -5,7 +5,7 @@
 
 namespace lockr {
     void Config::Initialize() {
-        CONFIG = YAML::LoadFile("resources/config.yaml");
+        CONFIG = YAML::LoadFile(RESOURCE_PATH "config.yaml");
         if(!CONFIG) {
             exit(CONFIG_NOT_DEFINED);
         }

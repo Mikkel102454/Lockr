@@ -4,8 +4,8 @@
 #include <string>
 
 namespace lockr {
-    bool Login(const std::string &email, const std::string &password,
-               std::string &outToken);
+    bool Login(const std::string& email, const std::string& password,
+               const std::string& companyId, std::string& outToken);
 }
 
 #endif

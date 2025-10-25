@@ -3,6 +3,7 @@
 #include "service/user/create.h"
 #include "service/user/exist.h"
 #include "service/user/login.h"
+#include "service/company/api/verify.h"
 #include "nlohmann/json.hpp"
 
 namespace lockr {
@@ -94,7 +95,15 @@ namespace lockr {
                 res.status = httplib::BadRequest_400;
                 return;
             }
-
+            if (!body.contains("companyToken")) {
+                nlohmann::json j = {
+                        {"success", false},
+                        {"message", "Company token required."}
+                };
+                res.set_content(j.dump(), "application/json");
+                res.status = httplib::BadRequest_400;
+                return;
+            }
             if (!body.contains("email")) {
                 nlohmann::json j = {
                         {"success", false},
@@ -113,10 +122,19 @@ namespace lockr {
                 res.status = httplib::BadRequest_400;
                 return;
             }
+            std::string companyId;
+            if(!ValidateCompanyKey(body["companyToken"], companyId)){
+                nlohmann::json j = {
+                        {"success", false},
+                        {"message", "Invalid company token."}
+                };
+                res.set_content(j.dump(), "application/json");
+                res.status = httplib::Unauthorized_401;
+                return;
+            }
 
             std::string refreshToken;
-
-            if (!Login(body["email"], body["password"], refreshToken)) {
+            if (!Login(body["email"], body["password"], companyId, refreshToken)) {
                 nlohmann::json j = {
                         {"success", false},
                         {"message", "Email or password is incorrect."}

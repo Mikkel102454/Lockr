@@ -33,6 +33,8 @@ add_library(lockr STATIC
         src/utils/config.cpp
         src/utils/env.cpp
         src/utils/hash.cpp
+        src/utils/json.cpp
+
         src/class/user.cpp
         src/db.cpp
 
@@ -54,8 +56,8 @@ add_library(lockr STATIC
         src/controller/api/user.cpp
         src/controller/api/token.cpp
         src/controller/api/company.cpp
-
-
+        src/controller/api/frontend/page.cpp
+        src/controller/api/frontend/resource.cpp
 )
 set_target_properties(lockr PROPERTIES POSITION_INDEPENDENT_CODE ON)
 

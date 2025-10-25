@@ -127,6 +127,20 @@ namespace lockr {
         }
         return std::nullopt;
     }
+    std::optional<bsoncxx::document::value> DB::getOne(const std::string& coll,
+                                                       bsoncxx::document::view_or_value filter,
+                                                       bsoncxx::builder::basic::document& proj) {
+        auto c = mDatabase[coll];
+
+        mongocxx::options::find opts;
+        opts.projection(proj.view());
+        opts.limit(1);
+
+        if (auto doc = c.find_one(std::move(filter), opts)) {
+            return std::move(*doc);
+        }
+        return std::nullopt;
+    }
 
     bool DB::Exists(const std::string& coll,
                     bsoncxx::document::view_or_value filter) {

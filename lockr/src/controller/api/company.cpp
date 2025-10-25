@@ -56,7 +56,7 @@ namespace lockr {
         res.status = httplib::Created_201;
     }
 
-    void GetUserData(const httplib::Request& req, httplib::Response& res) {
+    void PostGetUserData(const httplib::Request& req, httplib::Response& res) {
         nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
         if (body.is_discarded()) {
             nlohmann::json j = {
@@ -81,20 +81,17 @@ namespace lockr {
         std::string errorMessage;
         nlohmann::json outData;
         if (body.contains("fields") && body["fields"].is_array()) {
-            std::string* fields = new std::string[body["fields"].size()];
+            std::vector<std::string> fields;
+            const auto& rawFields = body["fields"];
+            fields.reserve(rawFields.size());
 
-            try {
-                size_t i = 0;
-                for (const auto& f : body["fields"]) {
-                    if (f.is_string()) {
-                        fields[i++] = f.get<std::string>();
-                    }
+            for (const auto& field : rawFields) {
+                if (field.is_string()) {
+                    fields.emplace_back(field.get<std::string>());
                 }
-                GetData(body["userId"], companyId, fields, errorMessage, outData);
-                delete[] fields;
-            } catch (std::exception& e){
-                delete[] fields;
             }
+
+            GetData(body["userId"], companyId, fields, errorMessage, outData);
         }else {
             GetAllData(body["userId"], companyId, errorMessage, outData);
         }
@@ -109,7 +106,7 @@ namespace lockr {
         }
 
         nlohmann::json j = {
-                {"userId", body["userId"]},
+//                {"userId", body["userId"]},
                 {"data", outData}
         };
         res.set_content(j.dump(), "application/json");

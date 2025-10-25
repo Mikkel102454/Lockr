@@ -6,12 +6,13 @@
 #include "httplib.h"
 
 namespace lockr {
-    bool ValidateAccessToken(const std::string &token) {
+    bool ValidateAccessToken(const std::string &token, std::string& companyId) {
         try{
             std::string key = GetEnv("ACCESS_TOKEN_KEY");
             auto verifier = jwt::verify()
                     .allow_algorithm(jwt::algorithm::hs256(key))
-                    .with_issuer("Lockr_Auth");
+                    .with_issuer("Lockr_Auth")
+                    .with_audience(companyId);
 
             verifier.verify(jwt::decode(token));
             return true;
@@ -20,12 +21,13 @@ namespace lockr {
             return false;
         }
     }
-    bool ValidateAccessToken(const std::string &token, std::string& outUserId) {
+    bool ValidateAccessToken(const std::string &token, std::string& companyId, std::string& outUserId) {
         try{
             std::string key = GetEnv("ACCESS_TOKEN_KEY");
             auto verifier = jwt::verify()
                     .allow_algorithm(jwt::algorithm::hs256(key))
-                    .with_issuer("Lockr_Auth");
+                    .with_issuer("Lockr_Auth")
+                    .with_audience(companyId);
 
             auto decodedJwt = jwt::decode(token);
             verifier.verify(decodedJwt);
@@ -39,7 +41,7 @@ namespace lockr {
         }
     }
 
-    int CreateNewAccessToken(std::string &outToken, const std::string &userId) {
+    int CreateNewAccessToken(std::string &outToken, std::string& companyId, const std::string &userId) {
 
         std::string key = GetEnv("ACCESS_TOKEN_KEY");
         outToken = jwt::create()
@@ -48,6 +50,7 @@ namespace lockr {
                 .set_subject(userId)
                 .set_issued_now()
                 .set_expires_at(std::chrono::system_clock::now() + std::chrono::seconds(600))
+                .set_audience(companyId)
                 .sign(jwt::algorithm::hs256(jwt::algorithm::hs256(key)));
         return httplib::OK_200;
     }

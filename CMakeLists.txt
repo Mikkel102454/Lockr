@@ -37,23 +37,12 @@ target_link_libraries(Lockr PRIVATE lockr mongo::mongocxx_static mongo::bsoncxx_
 
 if (WIN32)
     target_link_libraries(Lockr PRIVATE ws2_32 crypt32)
-    # If needed for your combo:
-    # target_link_libraries(Lockr PRIVATE secur32 bcrypt dnsapi iphlpapi)
 endif()
 
-# Copy .env next to binary
-add_custom_command(TARGET Lockr POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/lockr/.env
-        $<TARGET_FILE_DIR:Lockr>/.env
-)
-
-# Copy resources next to binary
-set(LOCKR_RES_DIR "${CMAKE_SOURCE_DIR}/lockr/resources")
-add_custom_command(TARGET Lockr POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E rm -rf "$<TARGET_FILE_DIR:Lockr>/resources"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${LOCKR_RES_DIR}" "$<TARGET_FILE_DIR:Lockr>/resources"
-)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(lockr PUBLIC RESOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+    target_compile_definitions(lockr PUBLIC ENV_PATH="${CMAKE_CURRENT_SOURCE_DIR}/")
+endif ()
 
 target_compile_definitions(Lockr PRIVATE
         LOCKR_SOURCE_RESOURCES_DIR="${LOCKR_RES_DIR}"

@@ -3,8 +3,6 @@
 
 #include "controller/api.h"
 
-#include "httplib.h"
-
 namespace lockr {
     void PostRefreshToken(const httplib::Request& req, httplib::Response& res);
 

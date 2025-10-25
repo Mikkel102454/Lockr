@@ -4,10 +4,10 @@
 #include <string>
 
 namespace lockr {
-    bool ValidateAccessToken(const std::string &token);
-    bool ValidateAccessToken(const std::string &token, std::string& outUserId);
+    bool ValidateAccessToken(const std::string &token, std::string& companyId);
+    bool ValidateAccessToken(const std::string &token, std::string& companyId, std::string& outUserId);
 
-    int CreateNewAccessToken(std::string &outToken, const std::string &userId);
+    int CreateNewAccessToken(std::string &outToken, std::string& companyId, const std::string &userId);
 }
 
 #endif
