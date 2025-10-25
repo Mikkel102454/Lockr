@@ -8,7 +8,7 @@
 namespace lockr {
     void PostCreateUser(const httplib::Request& req, httplib::Response& res) {
         nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
-        if (body.is_discarded()) {
+        if (!body.is_discarded()) {
             nlohmann::json j = {
                     {"success", false},
                     {"message", "Invalid JSON."}
@@ -30,7 +30,7 @@ namespace lockr {
 
     void PostUsernameValid(const httplib::Request& req, httplib::Response& res) {
         nlohmann::json body = nlohmann::json::parse(req.body, nullptr, false);
-        if (body.is_discarded()) {
+        if (!body.is_discarded()) {
             nlohmann::json j = {
                 {"success", false},
                 {"message", "Invalid JSON."}
