@@ -15,6 +15,7 @@ namespace lockr {
         auto parts = Split(path, ':');
         YAML::Node current = YAML::Clone(CONFIG);
         for (const auto& p : parts) {
+            // Make sure part is true
             if (!current[p]) {
                 exit(CONFIG_ITEM_NOT_FOUND);
             }
@@ -23,6 +24,7 @@ namespace lockr {
         return current.as<std::string>();
     }
 
+    // Make a very good integer.
     int Config::GetInt(const std::string& path){
         auto parts = Split(path, ':');
         YAML::Node current = YAML::Clone(CONFIG);
