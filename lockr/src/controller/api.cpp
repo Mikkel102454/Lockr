@@ -10,7 +10,8 @@ namespace lockr {
         //        FRONTEND
         // ----------------------
         svr.Get(R"(/style/([^/]+)?)", GetStyle);
-        svr.Get(R"(/code/([^/]+)?)", GetCode);
+        svr.Get(R"(/code/(.+))", GetCode);
+        svr.Get(R"(/resources/png/(.+))", GetPng);
         svr.Get("/", GetRootPage);
         svr.Get(R"(/([^/]+)?)", GetPage);
 

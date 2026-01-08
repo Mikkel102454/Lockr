@@ -10,7 +10,8 @@ namespace lockr {
         if (username.empty() || email.empty() || password.empty()) {
             response = {
                     {"success", false},
-                    {"message", "Username, email, password required."}
+                    {"message", "Username, email, password required."},
+                    {"type", "err"}
             };
             return 400;
         }
@@ -18,7 +19,8 @@ namespace lockr {
         if(User::UsernameExist(username)){
             response = {
                     {"success", false},
-                    {"message", "Username already exists."}
+                    {"message", "Username already exists."},
+                    {"type", "name"}
             };
             return 409;
         }
@@ -26,7 +28,8 @@ namespace lockr {
         if(User::EmailExist(email)){
             response = {
                     {"success", false},
-                    {"message", "Email already exists."}
+                    {"message", "Email already exists."},
+                    {"type", "email"}
             };
             return 409;
         }
@@ -40,7 +43,8 @@ namespace lockr {
         if (rc != 0) {
             response = {
                     {"success", false},
-                    {"message", "User could not be created."}
+                    {"message", "User could not be created."},
+                    {"type", "err"}
             };
             return 500;
         }
@@ -50,14 +54,16 @@ namespace lockr {
         if(user.save() == 3) {
             response = {
                     {"success", false},
-                    {"message", "User could not be created."}
+                    {"message", "User could not be created."},
+                    {"type", "err"}
             };
             return 500;
         }
 
         response = {
                 {"success", true},
-                {"message", "User has been created."}
+                {"message", "User has been created."},
+                {"type", "err"}
         };
         return 200;
     }

@@ -8,6 +8,7 @@
 namespace lockr {
     void GetStyle(const httplib::Request& req, httplib::Response& res);
     void GetCode(const httplib::Request& req, httplib::Response& res);
+    void GetPng(const httplib::Request& req, httplib::Response& res);
 }
 
 #endif

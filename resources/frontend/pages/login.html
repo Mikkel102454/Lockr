@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login — Dashboard</title>
+    <link rel="stylesheet" href="/style/styles.css">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="pattern-overlay" aria-hidden="true"></div>
+        <div class="auth-card" role="main">
+            <img src="/resources/png/logo/logoblack.png" alt="brand" class="auth-card-topright-logo" aria-hidden="true" />
+            <div class="auth-brand">
+            </div>
+
+            <div class="auth-header">
+                <h2>Welcome back</h2>
+                <p>Sign in to continue to your dashboard</p>
+            </div>
+
+            <form id="login-form" class="auth-form" autocomplete="off">
+                <div class="form-row">
+                    <label for="login-email">Email</label>
+                    <input id="login-email" type="email" placeholder="you@example.com" required />
+                    <p id="login-email-err"></p>
+                </div>
+                <div class="form-row">
+                    <label for="login-password">Password</label>
+                    <input id="login-password" type="password" placeholder="••••••••" required />
+                </div>
+                <div class="auth-actions">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-light)"><input id="remember" type="checkbox" /> Remember</label>
+                    <button id="login-submit" type="submit" class="btn-primary clean">Login Now</button>
+                </div>
+                <div class="auth-footer">Don't have an account? <button type="button" class="auth-link register-link">Click to register</button></div>
+            </form>
+
+            <form id="register-form" class="auth-form" style="display:none;" autocomplete="off">
+                <div class="form-row">
+                    <label for="reg-name">Full name</label>
+                    <input id="reg-name" type="text" placeholder="Jane Doe" required />
+                    <p id="reg-name-err"></p>
+                </div>
+                <div class="form-row">
+                    <label for="reg-email">Email</label>
+                    <input id="reg-email" type="email" placeholder="you@example.com" required />
+                    <p id="reg-email-err"></p>
+                </div>
+                <div class="form-row">
+                    <label for="reg-password">Password</label>
+                    <input id="reg-password" type="password" placeholder="At least 8 characters" required />
+                    <p id="reg-password-err"></p>
+                </div>
+                <div class="auth-actions">
+                    <span style="color:var(--text-light);font-size:13px">By registering you accept our terms</span>
+                    <button id="register-submit" type="submit" class="btn-primary clean" disabled>Create account</button>
+                </div>
+                <div class="auth-footer">Already have an account? <button type="button" class="auth-link login-link">Login</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="site-footer" class="site-footer">
+        <a class="site-footer-link" target="_blank" rel="noopener">© 2025 Lockr.com</a>
+    </div>
+
+    <script src="../code/login.js"></script>
+</body>
+</html>

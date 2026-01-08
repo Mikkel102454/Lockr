@@ -51,13 +51,17 @@ namespace lockr {
     }
 
     bool User::UsernameExist(const std::string& username) {
-        return DB::Exists("user", bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("username", username)));
+        auto filter = bsoncxx::builder::basic::make_document(
+            bsoncxx::builder::basic::kvp("username", username)
+        );
+        return DB::Exists("user", filter.view());
     }
 
     bool User::EmailExist(const std::string& email) {
-        return DB::Exists("user", bsoncxx::builder::basic::make_document(
-                bsoncxx::builder::basic::kvp("email", email)));
+        auto filter = bsoncxx::builder::basic::make_document(
+            bsoncxx::builder::basic::kvp("email", email)
+        );
+        return DB::Exists("user", filter.view());
     }
 
     int User::save() {

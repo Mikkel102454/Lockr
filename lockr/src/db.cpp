@@ -23,15 +23,18 @@ namespace lockr {
             std::string uriString =
                     "mongodb://" + GetEnv("DB_USER") + ":" + GetEnv("DB_PASS") +
                     "@" + GetEnv("DB_IP") + "/" + GetEnv("DB_NAME") +
-                    "?authSource=" + GetEnv("DB_NAME");
+                    "?authSource=" + GetEnv("DB_AUTH_SOURCE");
 
             auto uri = mongocxx::uri{uriString};
             auto tmp = std::make_unique<mongocxx::client>(uri);
 
-            mDatabase = (*tmp)[GetEnv("DB_NAME")];
+            const std::string dbname = GetEnv("DB_NAME");
+            mDatabase = (*tmp)[dbname];
             mClient = std::move(tmp);
 
             EnsureTables();
+
+            std::cout << "Database started and tables created!\n";
             return true;
         } catch (const std::exception &e) {
             std::cerr << "DB connect error: " << e.what() << "\n";
