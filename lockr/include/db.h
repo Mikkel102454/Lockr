@@ -13,7 +13,7 @@ namespace lockr {
                           std::string* out_err);
 
         static std::string Insert(const std::string& coll,
-               bsoncxx::document::view_or_value document);
+                                    bsoncxx::document::view_or_value document);
 
         static std::optional<bsoncxx::document::value> getOne(const std::string& coll,
                                                          bsoncxx::document::view_or_value filter);

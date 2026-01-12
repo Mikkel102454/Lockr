@@ -4,7 +4,8 @@
 #include <string>
 
 namespace lockr {
-    bool ValidateCompanyKey(const std::string& token, std::string& outId);
+    bool ValidateCompanyKey(const std::string& key, std::string& outId);
+    bool ValidateCompanyToken(const std::string& token, std::string& outId, std::string& outRedirect);
 }
 
 #endif

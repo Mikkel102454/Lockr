@@ -21,6 +21,6 @@ int main() {
     lockr::InitEndpoint(svr);
 
     std::cout << "Webserver started!\n";
-    svr.listen("0.0.0.0", 8080);
+    svr.listen(lockr::Config::GetString("server:ip"), lockr::Config::GetInt("server:port"));
     return 0;
 }

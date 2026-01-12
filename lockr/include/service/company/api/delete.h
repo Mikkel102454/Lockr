@@ -4,7 +4,8 @@
 #include <string>
 
 namespace lockr {
-    void DeleteCompanyKey(std::string& userId, std::string& token);
+    void DeleteCompanyKey(std::string& userId, std::string& key);
+    void DeleteCompanyToken(const std::string& userId, const std::string& compId);
 }
 
 #endif

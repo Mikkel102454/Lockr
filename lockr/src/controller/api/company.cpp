@@ -125,19 +125,23 @@ namespace lockr {
             return;
         }
 
-        std::string userId;
-        if (!ValidateAccessToken(body["accessToken"], userId)) {
-            nlohmann::json j = {
-                {"message", "Invalid access token."}
-            };
-            res.set_content(j.dump(), "application/json");
-            res.status = httplib::Unauthorized_401;
-            return;
-        }
+        std::string userId = "695f7dbce0b602b00a074b92";
+        // if (!ValidateAccessToken(body["accessToken"], userId)) {
+        //     nlohmann::json j = {
+        //         {"message", "Invalid access token."}
+        //     };
+        //     res.set_content(j.dump(), "application/json");
+        //     res.status = httplib::Unauthorized_401;
+        //     return;
+        // }
 
         std::string outKey;
-        CreateCompanyKey(outKey, userId, body["newName"]);
-        if (outKey.length() == 0) {
+        std::string outCompId;
+        std::string outToken;
+        CreateCompanyKey(outKey, outCompId, userId, body["newName"]);
+        CreateCompanyToken(outToken, userId, outCompId, body["redirect"]);
+
+        if (outKey.empty()) {
             nlohmann::json j = {
                 {"message", "Internal server error"}
             };

@@ -97,8 +97,8 @@ namespace lockr {
             }
             if (!body.contains("companyToken")) {
                 nlohmann::json j = {
-                        {"success", false},
-                        {"message", "Company token required."}
+                    {"success", false},
+                    {"message", "Company token required."}
                 };
                 res.set_content(j.dump(), "application/json");
                 res.status = httplib::BadRequest_400;
@@ -123,7 +123,8 @@ namespace lockr {
                 return;
             }
             std::string companyId;
-            if(!ValidateCompanyKey(body["companyToken"], companyId)){
+            std::string domain;
+            if(!ValidateCompanyToken(body["companyToken"], companyId, domain)){
                 nlohmann::json j = {
                         {"success", false},
                         {"message", "Invalid company token."}

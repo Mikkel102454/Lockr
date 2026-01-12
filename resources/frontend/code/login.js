@@ -57,16 +57,39 @@
             const first = $('reg-name'); if (first) first.focus();
         };
 
-        loginForm.addEventListener('submit', function(e){
+        loginForm.addEventListener('submit', async function(e){
             e.preventDefault();
             const email = $('login-email').value.trim();
             const pw = $('login-password').value;
+
+            const emailElementErr = $('login-email-err');
+
             if (!email || !pw) {
                 alert('Please provide email and password');
                 return;
             }
-            console.log('login attempt', { email });
-            alert('Signed in (demo). Redirecting to dashboard...');
+
+            const payload = {
+                email: email,
+                password: pw
+            };
+
+            const response = await fetch("/api/users/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if(!response.ok){
+                const result = await response.json();
+
+                emailElementErr.innerText = result.message;
+                return;
+            }
+
             window.location.href = 'index.html';
         });
 

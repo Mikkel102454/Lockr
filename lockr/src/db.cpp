@@ -84,7 +84,7 @@ namespace lockr {
     }
 
      std::string DB::Insert(const std::string& coll,
-               bsoncxx::document::view_or_value document) {
+                                bsoncxx::document::view_or_value document) {
         try {
             auto c = mDatabase[coll];
 
