@@ -6,7 +6,7 @@
 
 namespace lockr {
     int CreateUser(const std::string &username, const std::string &email,
-                   const std::string &password, nlohmann::json &response) {
+                   const std::string &password, bool admin, nlohmann::json &response) {
         if (username.empty() || email.empty() || password.empty()) {
             response = {
                     {"success", false},
@@ -37,6 +37,7 @@ namespace lockr {
         User user;
         user.setUsername(username);
         user.setEmail(email);
+        user.setAdmin(admin);
 
         std::string passwordHash;
         const int rc = User::HashPassword(password, passwordHash);

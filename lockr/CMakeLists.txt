@@ -29,6 +29,8 @@ endif()
 # Your library
 # ---------------------------
 add_library(lockr STATIC
+        src/setup.cpp
+        src/utils/logger.cpp
         src/utils/string.cpp
         src/utils/config.cpp
         src/utils/env.cpp

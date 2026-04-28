@@ -22,7 +22,7 @@ namespace lockr {
         return true;
     }
 
-    bool ValidateCompanyToken(const std::string& token, std::string& outId, std::string& outRedirect) {
+    bool ValidateCompanyToken(const std::string& token, std::string& outId, std::string& outDomain) {
 
         if (!DB::Exists("company_token", bsoncxx::builder::basic::make_document(
                 bsoncxx::builder::basic::kvp("token", token)
@@ -35,7 +35,7 @@ namespace lockr {
         ));
         bsoncxx::document::view view = doc->view();
         outId = std::string{ view["company_id"].get_string().value };
-        outRedirect = std::string{ view["redirect"].get_string().value };
+        outDomain = std::string{ view["domain"].get_string().value };
         return true;
     }
 }

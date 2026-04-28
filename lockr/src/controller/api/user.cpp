@@ -25,7 +25,7 @@ namespace lockr {
 
         nlohmann::json msg;
 
-        res.status = CreateUser(user, email, pass, msg);
+        res.status = CreateUser(user, email, pass, false, msg);
         res.set_content(msg.dump(), "application/json");
     }
 

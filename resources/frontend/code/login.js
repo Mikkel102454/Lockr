@@ -61,6 +61,8 @@
             e.preventDefault();
             const email = $('login-email').value.trim();
             const pw = $('login-password').value;
+            const params = new URLSearchParams(window.location.search);
+            const companyToken = params.get("token");
 
             const emailElementErr = $('login-email-err');
 
@@ -71,7 +73,8 @@
 
             const payload = {
                 email: email,
-                password: pw
+                password: pw,
+                companyToken: companyToken
             };
 
             const response = await fetch("/api/users/login", {

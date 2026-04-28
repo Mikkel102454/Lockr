@@ -28,10 +28,14 @@ namespace lockr {
 
         std::string_view getPassword() { return mPassword; }
         void setPassword(const std::string& password) { mPassword = password; }
+
+        bool isAdmin() { return mAdmin; }
+        void setAdmin(bool admin) { mAdmin = admin; }
     private:
         std::string mUsername;
         std::string mEmail;
         std::string mPassword;
+        bool mAdmin;
     };
 }
 

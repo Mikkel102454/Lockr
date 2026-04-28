@@ -5,7 +5,7 @@
 
 namespace lockr {
     bool ValidateCompanyKey(const std::string& key, std::string& outId);
-    bool ValidateCompanyToken(const std::string& token, std::string& outId, std::string& outRedirect);
+    bool ValidateCompanyToken(const std::string& token, std::string& outId, std::string& outDomain  );
 }
 
 #endif

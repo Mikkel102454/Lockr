@@ -24,7 +24,7 @@ namespace lockr {
     }
 
     void CreateCompanyToken(std::string& outToken, const std::string& userId,
-                                const std::string& compId, const std::string& redirect) {
+                                const std::string& compId, const std::string& domain) {
         unsigned char tokenChar[32];
         RAND_bytes(tokenChar, 32);
 
@@ -35,7 +35,7 @@ namespace lockr {
                 bsoncxx::builder::basic::kvp("user_id", userId),
                 bsoncxx::builder::basic::kvp("company_id", compId),
                 bsoncxx::builder::basic::kvp("token", token),
-                bsoncxx::builder::basic::kvp("redirect", redirect)
+                bsoncxx::builder::basic::kvp("domain", domain)
                 ));
     }
 }

@@ -8,7 +8,7 @@ namespace lockr {
                                     const std::string& name);
 
     void CreateCompanyToken(std::string& outToken, const std::string& userId,
-                                const std::string& compId, const std::string& redirect);
+                                const std::string& compId, const std::string& domain);
 }
 
 #endif

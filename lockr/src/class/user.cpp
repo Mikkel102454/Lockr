@@ -72,6 +72,7 @@ namespace lockr {
                 bsoncxx::builder::basic::kvp("username", mUsername),
                 bsoncxx::builder::basic::kvp("email", mEmail),
                 bsoncxx::builder::basic::kvp("password", mPassword),
+                bsoncxx::builder::basic::kvp("admin", mAdmin),
                 bsoncxx::builder::basic::kvp("companies", ""),
                 bsoncxx::builder::basic::kvp("data", "")
         );

@@ -139,7 +139,7 @@ namespace lockr {
         std::string outCompId;
         std::string outToken;
         CreateCompanyKey(outKey, outCompId, userId, body["newName"]);
-        CreateCompanyToken(outToken, userId, outCompId, body["redirect"]);
+        CreateCompanyToken(outToken, userId, outCompId, body["domain"]);
 
         if (outKey.empty()) {
             nlohmann::json j = {

@@ -6,7 +6,7 @@
 
 namespace lockr {
     int CreateUser(const std::string &username, const std::string &email,
-                   const std::string &password, nlohmann::json &response);
+                   const std::string &password, bool admin, nlohmann::json &response);
 }
 
 #endif
